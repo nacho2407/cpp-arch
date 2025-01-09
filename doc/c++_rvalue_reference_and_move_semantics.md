@@ -159,10 +159,5 @@ MyNewVector<T>::MyNewVector(MyNewVector<T>&& new_vec) : MyVector<T>(std::move(ne
 &nbsp;**이동 연산을 구현하는 오버로드 함수는 예외를 발생시키지 않도록 정의하고 이를 `noexcept` 키워드를 활용하여 이를 컴파일러에게 명시**하는 것이 좋은데, 왜냐하면 **컴파일러는 연산의 효율 상승보다 예외에 대한 안정성을 확보하는 것을 더 중요하게 여기기 때문**이다. 실제로 `noexcept` 키워드 없이 정의한 오버로드 함수는 때때로 예상과 달리 이동 연산이 수행되지 않는 경우를 볼 수 있다. 특히 Standard Libraries의 `std::vector`는 오버로드 함수가 `noexcept`로 선언되어 있지 않으면 이동 연산이 수행되지 않는다[[1]](#references).
 
 
-## 마무리
-
-&nbsp;겨우 복사를 위한 연산 하나에 이런 세세한 내용들까지 머리에 담아야 하나 생각이 든다. 하지만 이러한 노력들 하나하나가 C++을 능숙하게 다루는데에 큰 도움이 될 것이고, 결국 더 효율적이고 높은 품질의 프로그램을 만들어내게 할 것이다.
-
-
 ## References
 [1] 씹어먹는 C++ 토막글 ① - Rvalue(우측값) 레퍼런스에 관해, 모두의 코드([https://modoocode.com/189](https://modoocode.com/189))
