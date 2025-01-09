@@ -1,2 +1,2 @@
 # cpp_archive
-C++ learning archive
+C++ 공부 내용 정리 아카이브
