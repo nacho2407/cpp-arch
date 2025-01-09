@@ -1,9 +1,9 @@
-# C++ Rvalue Reference
+# C++ Rvalue Reference & Move Semantics
 
 *Thomas Becker(현재 원문 확인 불가) 님이 작성하신 글을 번역한 모두의 코드[[1]](#references) 님의 글을 바탕으로 공부한 내용을 정리한 글입니다.*
 
 
-## Move Semantics
+## Rvalue Reference & Move Semantics
 
 &nbsp;C++로 우리만의 벡터 `MyVector`를 구현한다고 가정하자. `MyVector`는 아래와 같이 원소들을 동적 메모리 상에 저장하고 해당 위치를 포인터로 소유하고 있을 것이다.
 
@@ -15,7 +15,7 @@ public:
 	// ...
 private:
 	// ...
-	T* m_element;
+	T* element;
 }
 ```
 <br>
@@ -28,9 +28,9 @@ MyVector<T>& MyVector<T>::operator =(const MyVector<T>& new_vec)
 {
 	// ...
 
-	// this의 m_element를 해제
-	// this의 m_element에 새 동적 메모리 공간 대입
-	// new_vec의 m_element가 가리키는 내용들을 this의 m_element가 가리키는 위치로 복사
+	// this의 element를 해제
+	// this의 element에 새 동적 메모리 공간 대입
+	// new_vec의 element가 가리키는 내용들을 this의 element가 가리키는 위치로 복사
 
 	// ...
 
@@ -53,7 +53,7 @@ v = foo();
 &nbsp;`foo()`의 반환으로 생성되는 `MyVector` 객체는 임시 객체이기 때문에 `v = foo()`가 수행되고나서 자동으로 사라질 것이다.
 
 
-&nbsp;그런데 생각해보면, 곧 사라질 임시 객체의 내용을 복사해오기 위해 대입 연산자에서 수행하는 복사가 비효율적이지 않은가? 그냥 `this`의 `m_element`가 가리키는 위치를 해제하고 임시 객체의 `m_element`를 대입하면 훨씬 효율적이지 않은가? 알다시피 **메모리를 할당하고 해제하는 작업은 프로그래밍에서 매우 비용이 높은 작업**이다. `MyVector`와 같이 깊은 복사를 수행해야하는 작업에서는 그 비용 차이가 더 두드러질 것이다.
+&nbsp;그런데 생각해보면, 곧 사라질 임시 객체의 내용을 복사해오기 위해 대입 연산자에서 수행하는 복사가 비효율적이지 않은가? 그냥 `this`의 `element`가 가리키는 위치를 해제하고 임시 객체의 `element`를 대입하면 훨씬 효율적이지 않은가? 알다시피 **메모리를 할당하고 해제하는 작업은 프로그래밍에서 매우 비용이 높은 작업**이다. `MyVector`와 같이 깊은 복사를 수행해야하는 작업에서는 그 비용 차이가 더 두드러질 것이다.
 
 
 &nbsp;더 효율적인 대입 연산을 위해 **대입 연산자를 오버로딩**해보자. 우리는 일반적인 `MyVector` 객체를 대입하는 경우와 `foo()`의 반환값과 같은 임시 객체를 대입하는 경우를 구분해야 한다. 이 둘은 **Lvalue**를 대입하는 경우와 **Rvalue**를 대입하는 경우로 구분할 수 있다. `v`와 `u`는 Lvalue이고, `foo()`의 반환으로 생성되는 임시 객체는 Pure Rvalue다(Lvalues, Rvalues에 대한 내용은 여기서는 생략한다).
@@ -70,16 +70,16 @@ MyVector<T>& MyVector<T>::operator =(MyVector<T>&& new_vec)
 {
 	// ...
 
-	T* temp = m_element;
-	this->m_element = new_vec.m_element;
-	new_vec.m_element = temp;
+	T* temp = element;
+	this->element = new_vec.element;
+	new_vec.element = temp;
 
 	// ...
 
 	return *this;
 }
 ```
-&nbsp;소멸자에서 m_element를 적절하게 해제하도록 구현했다면 대입 연산 후 임시 객체가 소멸할 때 임시 객체의 m_element가 가리키는 공간 또한 적절하게 해제될 것이므로, 위처럼 단순히 m_element에 swap 연산을 통해 간단하고 효율적으로 구현할 수 있다.
+&nbsp;소멸자에서 element를 적절하게 해제하도록 구현했다면 대입 연산 후 임시 객체가 소멸할 때 임시 객체의 element가 가리키는 공간 또한 적절하게 해제될 것이므로, 위처럼 단순히 element에 swap 연산을 통해 간단하고 효율적으로 구현할 수 있다.
 
 
 &nbsp;이러한 연산을 **Move Semantics**(이동 문법/연산)라 부른다. C++ 11 이전에도 TMP를 통해 이동 연산을 구현할 수 있었으나, Rvalue Reference를 통해 함수 오버로딩으로 구현할 수 있게 되었다[[1]](#references).
