@@ -18,11 +18,11 @@
 &nbsp;**`<argorithm>`의 `std::for_each`**. `func`의 반환값은 무시된다. `InputIterator`를 역참조한 결과는 `Type`과 동일하거나 `Type`으로 변환 가능해야 한다.
 
 ```C++
-template <typename InputIterator, typename Function>
-Function std::for_each(InputIterator begin, InputIterator end, Function func);
-
 // func은 아래와 같은 형태. 반드시 constant reference일 필요는 없음.
 void func(const Type& arg);
+
+template <typename InputIterator, typename Function>
+Function std::for_each(InputIterator begin, InputIterator end, Function func);
 ```
 <br>
 
@@ -31,17 +31,17 @@ void func(const Type& arg);
 &nbsp;`UnaryOperation`은 하나의 container에, `BinaryOperation`은 두 개의 container에 각 연산을 수행한다. `d_begin`은 결과를 저장할 범위로, `begin`(1/2)과 동일해도 된다. `InputIterator`(1/2)를 역참조한 결과는 `Type`(1/2)과 동일하거나 `Type`(1/2)으로 변환 가능해야 한다. 동일하게, `OutputIterator`를 역참조한 결과는 `ReturnType`과 동일하거나 `ReturnType`으로 변환 가능해야 한다.
 
 ```C++
-template <typename InputInterator, typename OutputIterator, typename UnaryOperation>
-OutputIterator std::transform(InputIterator begin, InputIterator end, OutputIterator d_begin, UnaryOperation unary_op);
-
-template <typename InputIterator1, typename InputIterator2, typename OutputIterator, typename BinaryOperation>
-OutputIterator std::transform(InputIterator1 begin1, InputIterator1 end1, InputIterator2 begin2, InputIterator2 end2, OutputIterator d_begin, BinaryOperation binary_op);
-
 // unary_op는 아래와 같은 형태. 반드시 constant reference일 필요는 없음.
 ReturnType unary_op(const Type& arg);
 
 // binary_op는 아래와 같은 형태. 반드시 constant reference일 필요는 없음.
 ReturnType binary_op(const Type1& arg1, const Type2& arg2);
+
+template <typename InputInterator, typename OutputIterator, typename UnaryOperation>
+OutputIterator std::transform(InputIterator begin, InputIterator end, OutputIterator d_begin, UnaryOperation unary_op);
+
+template <typename InputIterator1, typename InputIterator2, typename OutputIterator, typename BinaryOperation>
+OutputIterator std::transform(InputIterator1 begin1, InputIterator1 end1, InputIterator2 begin2, InputIterator2 end2, OutputIterator d_begin, BinaryOperation binary_op);
 ```
 <br>
 
@@ -84,4 +84,4 @@ private:
 
 &nbsp;`[&] {}`와 같이 작성하여 외부의 모든 변수를 레퍼런스로 캡쳐하거나 `[=] {}`와 같이 작성하여 외부의 모든 변수를 값으로 캡쳐할 수 있다. 물론 `[=, &x, &y] {}`와 같이 지정한 방식으로 캡쳐할 수도 있다.
 
-(작성중)
+(작성중) - 템플릿을 이용해 클로져 객체 받기, 캡쳐가 수행되는 시점, 캡쳐된 변수들은 const 취급, 캡쳐된 변수를 함수 내에서 지역 변수처럼 취급하기
