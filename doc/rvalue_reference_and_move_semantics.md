@@ -109,7 +109,7 @@ target = std::move(source);
 &nbsp;이동 연산과 `std::move`를 이용하는 것은 많은 표준 알고리즘의 비약적인 속도 향상을 가져온다. 특히 swap 연산이 빈번하게 일어나는 정렬 등의 알고리즘에서 그 속도 향상이 크다. 기존의 Standard Libraries의 알고리즘들은 타입의 복사 가능성(Copyablility)를 요구하였으나, 조사 결과 이동 가능성(moveability)으로도 충분함을 밝혀냈으며, 복사는 불가능하나 이동만 가능한 타입에 대해서도 Standard Libraries를 이용할 수 있게 되었다.
 
 
-## Rvalue Reference는 Rvalue인가?
+## Is an Rvalue Reference an Rvalue?
 
 &nbsp;주의해야할 점이 하나 더 있다. Move Semantics 단에서는 Rvalue Reference를 Lvalue와 Rvalue의 로딩을 구분하는 용도로 사용했었는데, 실제로 해당 값을 사용하려 할 때 **Rvalue Reference는 Rvalue로 취급되는가?** 아래의 예를 살펴보자.
 
