@@ -397,7 +397,7 @@ void func(Types... arg)
 
 - `std::sort`
 
-&nbsp;기본 정렬 알고리즘. `RandomAccessIterator` 타입을 만족하는 반복자를 반환하는 자료구조에 사용할 수 있다. 기본적으로 오름차순 정렬을 수행한다.
+&nbsp;기본 정렬 알고리즘. 퀵 정렬, 힙 정렬, 삽입 정렬을 복합적으로 사용하는 인트로 정렬을 이용하여 구현되었다. `RandomAccessIterator` 타입을 만족하는 반복자를 반환하는 자료구조에 사용할 수 있다. 기본적으로 오름차순 정렬을 수행한다.
 
 ```C++
 std::vector<int> vec;
@@ -412,6 +412,64 @@ std::sort(vec.begin(), vec.end());
 ```
 <br>
 
+&nbsp;정렬 순서를 변경하고 싶다면 세 번째 인자로 Functor를 넘겨주거나 아래와 같이 람다 함수를 넘겨주면 된다.
 
-## References
-- 이후 추가
+```C++
+std::vector<int> vec;
+
+vec.push_back(5);
+vec.push_back(1);
+vec.push_back(3);
+vec.push_back(4);
+vec.push_back(2);
+
+std::sort(vec.begin(), vec.end(), [](int first, int second) {
+        return first > second; // int 내림차순 정렬
+});
+```
+
+&nbsp;`<functional>`의 `std::greater<int>` 등을 활용하여 더 간단하게 구현할 수도 있다. `std::greater<T>`, `std::less<T>` 등은 `T`에 `operator <`가 정의되어 있어야 한다.
+
+
+- `std::partial_sort`
+
+&nbsp;정렬하고자 하는 컨테이너의 일부분만 정렬하는 알고리즘. `std::sort`와 달리 start, middle, end 세 개의 인자가 필요하다. start부터 middle 전 까지의 원소들이 정렬되며, middle부터 end 전까지의 원소들도 의도치 않게 순서가 뒤바뀔 수 있기 때문에 정말 [start, middle) 사이의 원소만 정렬하고 나머지의 순서는 중요하지 않을 때만 사용하는 것이 좋다. 이런 경우에는 `std::sort`를 사용하는 것보다 시간 효율이 좋다.
+
+```C++
+std::vector<int> vec;
+
+vec.push_back(5);
+vec.push_back(1);
+vec.push_back(3);
+vec.push_back(4);
+vec.push_back(2);
+
+std::partial_sort(vec.begin(), vec.begin() + 3, vec.end());
+```
+<br>
+
+&nbsp;정렬 순서를 바꾸고 싶을 때는 `std::sort`처럼 마지막 인자로 비교 함수 객체(람다 함수)를 넘겨준다.
+
+
+- `std::stable_sort`
+
+&nbsp;정렬 알고리즘에서 동일한 수준의 값들은 정렬 후에도 기존의 순서를 유지하는 것을 안정성(Stability)라 하는데, `std::sort`는 안정성을 만족하지 않는 퀵 정렬과 힙 정렬 등으로 구성되어 있다. 만약 안정성이 반드시 필요한 경우(pair 정렬 등)에는 `std::stable_sort`를 이용하여 정렬할 수 있다. `std::stable_sort`는 안정성을 만족하는 합병 정렬 및 삽입 정렬로 구현되었다. 사용법은 `std::sort`와 동일하다.
+
+```C++
+std::vector<std::pair<int, char>> vec;
+
+vec.push_back(std::make_pair(5, 'a'));
+vec.push_back(std::make_pair(1, 'b'));
+vec.push_back(std::make_pair(3, 'c'));
+vec.push_back(std::make_pair(5, 'd'));
+vec.push_back(std::make_pair(2, 'e'));
+
+std::stable_sort(vec.begin(), vec.end());
+```
+<br>
+
+### Container Control - Erasing, Finding
+
+- `std::remove`, `std::remove_if`
+
+&nbsp;정수 벡터 내에서 3이라는 숫자를 모두 제거하고 싶을 때 반복자와 `erase` 함수를 이용하여 구현할 수도 있지만, `<vector>`와 같이 `RandomAccessIterator`를 이용하는 컨테이너들은 원소가 삭제되면 현재 반복자를 계속 사용할 수 없기 때문에 계속 반복자를 다시 생성해야하는 비효율적인 면이 있다. (작성중)
