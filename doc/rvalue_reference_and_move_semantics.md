@@ -1,8 +1,5 @@
 # C++ Rvalue Reference & Move Semantics
 
-*Thomas Becker(현재 원문 확인 불가)님이 작성하신 글을 번역한 모두의 코드님의 글을 바탕으로 공부한 내용을 정리한 글입니다.*
-
-
 ## Rvalue Reference & Move Semantics
 
 &nbsp;C++로 우리만의 벡터 `MyVector`를 구현한다고 가정하자. `MyVector`는 아래와 같이 원소들을 동적 메모리 상에 저장하고 해당 위치를 포인터로 소유하고 있을 것이다.
@@ -56,7 +53,7 @@ v = foo();
 &nbsp;그런데 생각해보면, 곧 사라질 임시 객체의 내용을 복사해오기 위해 대입 연산자에서 수행하는 복사가 비효율적이지 않은가? 그냥 `this`의 `element`가 가리키는 위치를 해제하고 임시 객체의 `element`를 대입하면 훨씬 효율적이지 않은가? 알다시피 **메모리를 할당하고 해제하는 작업은 프로그래밍에서 매우 비용이 높은 작업**이다. `MyVector`와 같이 깊은 복사를 수행해야하는 작업에서는 그 비용 차이가 더 두드러질 것이다.
 
 
-&nbsp;더 효율적인 대입 연산을 위해 **대입 연산자를 오버로딩**해보자. 우리는 일반적인 `MyVector` 객체를 대입하는 경우와 `foo()`의 반환값과 같은 임시 객체를 대입하는 경우를 구분해야 한다. 이 둘은 **Lvalue**를 대입하는 경우와 **Rvalue**를 대입하는 경우로 구분할 수 있다. `v`와 `u`는 Lvalue이고, `foo()`의 반환으로 생성되는 임시 객체는 Pure Rvalue다(Lvalues, Rvalues에 대한 내용은 여기서는 생략한다).
+&nbsp;더 효율적인 대입 연산을 위해 **대입 연산자를 오버로딩**해보자. 우리는 일반적인 `MyVector` 객체를 대입하는 경우와 `foo()`의 반환값과 같은 임시 객체를 대입하는 경우를 구분해야 한다. 이 둘은 **Lvalue**를 대입하는 경우와 **Rvalue**를 대입하는 경우로 구분할 수 있다. `v`와 `u`는 Lvalue이고, `foo()`의 반환으로 생성되는 임시 객체는 Pure Rvalue다.
 
 
 &nbsp;이 때 사용되는 것이 **Rvalue Reference**(우측값 참조)다. C++ 11에서 추가된 문법으로, `MyVector`의 Rvalue Reference는 `MyVector&&`로 정의된다. **Lvalue는 Lvalue Reference 매개 변수로, Rvalue는 Rvalue Reference 매개 변수로 로드되는 것을 선호**하기 때문에, 우리는 함수 오버로딩을 이용하여 Rvalue 매개 변수를 더 효율적으로 대입할 수 있다.
