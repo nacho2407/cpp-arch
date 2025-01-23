@@ -1,5 +1,3 @@
-// need to compile with -std=c++23
-
 #include <chrono>
 #include <condition_variable>
 #include <deque>
