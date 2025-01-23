@@ -37,6 +37,7 @@ void run(void)
         // 임계 구역
         static std::deque<std::string> downloaded;
         static std::size_t num_procesed = 0;
+        
         static std::mutex mtx;
         static std::condition_variable cv;
 

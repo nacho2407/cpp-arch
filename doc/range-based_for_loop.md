@@ -1,5 +1,7 @@
 # Range-based for loop
 
+&nbsp;`<algorithm>`에 정의되어 있다.
+
 ## std::for_each
 
 &nbsp;`func`의 반환값은 무시된다. `InputIterator`를 역참조한 결과는 `Type`과 동일하거나 `Type`으로 변환 가능해야 한다.

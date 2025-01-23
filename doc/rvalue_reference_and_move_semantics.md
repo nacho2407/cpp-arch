@@ -100,7 +100,7 @@ target = std::move(source);
 &nbsp;`std::move`는 사실 `static_cast<typename std::remove_reference<T>::type&&>(t)`를 반환하는 간단한 함수이고, 실제로 `std::move`대신 `static_cast<T&&>`를 써도 (안정성은 좀 떨어질지언정) Rvalue Reference로 변환이 가능하다. 하지만 `std::move`를 사용하는 것이 더 안정적이고 가독성도 좋기 때문에 `std::move` 사용을 권장한다.
 
 
-&nbsp;Move Semantics 단에서 살펴본 바와 같이 이동 연산은 일반적으로 swap 연산을 통해 구현되는데, 이 때 주의해야할 것은 `source`가 스코프를 벗어나기 전까지 내용이 유지되기 때문에 **사용자가 언제 객체가 소멸될지를 쉽게 알아차리기 어렵다**는 것이다. 때문에 임시 객체를 대입하는 경우와 같이 **이동 연산 후 즉시 객체가 소멸되기를 기대하는 연산(쓰레드 락 해제 등)들은 반드시 이동 연산 함수 내부에서 수행**되어야 한다.
+&nbsp;Move Semantics 단에서 살펴본 바와 같이 이동 연산은 일반적으로 swap 연산을 통해 구현되는데, 이 때 주의해야 할 것은 `source`가 스코프를 벗어나기 전까지 내용이 유지되기 때문에 **사용자가 언제 객체가 소멸될지를 쉽게 알아차리기 어렵다**는 것이다. 때문에 임시 객체를 대입하는 경우와 같이 **이동 연산 후 즉시 객체가 소멸되기를 기대하는 연산(쓰레드 락 해제 등)들은 반드시 이동 연산 함수 내부에서 수행**되어야 한다.
 
 
 &nbsp;이동 연산과 `std::move`를 이용하는 것은 많은 표준 알고리즘의 비약적인 속도 향상을 가져온다. 특히 swap 연산이 빈번하게 일어나는 정렬 등의 알고리즘에서 그 속도 향상이 크다. 기존의 Standard Libraries의 알고리즘들은 타입의 복사 가능성(Copyablility)를 요구하였으나, 조사 결과 이동 가능성(moveability)으로도 충분함을 밝혀냈으며, 복사는 불가능하나 이동만 가능한 타입에 대해서도 Standard Libraries를 이용할 수 있게 되었다.
@@ -108,7 +108,7 @@ target = std::move(source);
 
 ## Is an Rvalue Reference an Rvalue?
 
-&nbsp;주의해야할 점이 하나 더 있다. Move Semantics 단에서는 Rvalue Reference를 Lvalue와 Rvalue의 로딩을 구분하는 용도로 사용했었는데, 실제로 해당 값을 사용하려 할 때 **Rvalue Reference는 Rvalue로 취급되는가?** 아래의 예를 살펴보자.
+&nbsp;주의해야 할 점이 하나 더 있다. Move Semantics 단에서는 Rvalue Reference를 Lvalue와 Rvalue의 로딩을 구분하는 용도로 사용했었는데, 실제로 해당 값을 사용하려 할 때 **Rvalue Reference는 Rvalue로 취급되는가?** 아래의 예를 살펴보자.
 
 ```C++
 template <typename T>
