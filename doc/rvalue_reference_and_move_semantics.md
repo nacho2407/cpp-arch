@@ -1,6 +1,4 @@
-# C++ Rvalue Reference & Move Semantics
-
-## Rvalue Reference & Move Semantics
+# Rvalue Reference & Move Semantics
 
 &nbsp;C++로 우리만의 벡터 `MyVector`를 구현한다고 가정하자. `MyVector`는 아래와 같이 원소들을 동적 메모리 상에 저장하고 해당 위치를 포인터로 소유하고 있을 것이다.
 

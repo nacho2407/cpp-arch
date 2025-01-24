@@ -44,6 +44,7 @@ int main(void)
 
 void say_hi(void)
 {
+        // ??
         std::cout << "Hello, " << "world!" << std::endl;
 }
 
@@ -69,4 +70,104 @@ int main(void)
 
 ## std::mutex, std::unique_lock
 
-(작성중)
+&nbsp;병렬 프로그래밍이나 멀티 쓰레딩 환경에서 동일한 리소스에 여러 프로세스(쓰레드)가 접근하려고 하면 실행 순서에 따라 결과가 의도치 않게 나올 수 있는데, 이를 경쟁 조건(Race Condition)이라 한다. 이러한 경쟁 조건을 해결할 수 있는 방법은 여러가지가 있는데, **C++에서는 뮤텍스(Mutex)라는 일종의 잠금 장치를 제공한다**. `std::mutex`는 아래와 같이 사용한다.
+
+```C++
+#include <iostream>
+#include <mutex>
+#include <thread>
+
+void up_one(int* i, std::mutex* mtx)
+{
+        mtx->lock();
+
+        (*i)++;
+
+        mtx->unlock();
+}
+
+void up_two(int* i, std::mutex* mtx)
+{
+        // std::lock_guard를 사용하는 방법
+        std::lock_guard lk(*mtx);
+
+        *i += 2;
+}
+
+int main(void)
+{
+        static int i = 0;
+        
+        std::mutex mtx;
+
+        std::thread t1(up_one, &i, &mtx);
+        std::thread t2(up_two, &i, &mtx);
+
+        t1.join();
+        t2.join();
+
+        std::cout << i << std::endl;
+
+        return 0;
+}
+```
+<br>
+
+&nbsp;`std::mutex`로 락을 걸게 되면 다른 쓰레드들은 해당 락이 해제될 때까지 무한정 기다리게 되는데, 락을 취득한 쓰레드가 락을 해제하지 않은 채 종료되면 프로그램이 더 이상 진행되지 않는 데드락 상태에 빠질 수 있다. `std::lock_guard`는 스마트 포인터와 같은 래퍼 클래스로, `std::lock_guard` 객체가 해제될 때 자신이 소유하고 있던 `std::mutex`의 락도 함께 해제해준다.
+
+
+&nbsp;`std::unique_lock`은 `std::lock_guard`와 사용법은 조금 다르지만 거의 유사하다. `std::lock_guard`는 명시적인 락 해제가 불가능하지만, `std::unique_lock`은 명시적인 잠금과 해제가 가능하여 더 유연하다. 아래와 같이 사용한다.
+
+```C++
+#include <iostream>
+#include <mutex>
+#include <thread>
+
+void up_one(int* i, std::mutex* mtx)
+{
+        std::unique_lock<std::mutex> lk(*mtx);
+
+        (*i)++;
+
+        lk.unlock();
+
+        // 이후 다시 lock 가능능
+}
+
+void up_two(int* i, std::mutex* mtx)
+{
+        std::unique_lock<std::mutex> lk(*mtx);
+
+        *i += 2;
+
+        lk.unlock();
+}
+
+int main(void)
+{
+        static int i = 0;
+        
+        std::mutex mtx;
+
+        std::thread t1(up_one, &i, &mtx);
+        std::thread t2(up_two, &i, &mtx);
+
+        t1.join();
+        t2.join();
+
+        std::cout << i << std::endl;
+
+        return 0;
+}
+```
+<br>
+
+## Producer-Consumer Pattern, std::condition_variable
+
+&nbsp;생산자-소비자 패턴은 멀티 쓰레드 프로그래밍에서 자주 사용되는 디자인 패턴으로, 하나 이상의 생산자 쓰레드와 하나 이상의 소비자 쓰레드 간의 작업을 동기화하여 데이터의 생산-소비 과정을 효율적으로 관리하는 구조를 제공한다.
+
+
+&nbsp;데이터를 생산하는 생산자 쓰레드는 공유 자원(임계 구역)인 버퍼에 데이터를 저장하고, 소비자 쓰레드는 버퍼에서 데이터를 소비(처리)한다. 생산자 쓰레드가 데이터를 저장하는 동안에는 소비자 쓰레드가 할 일이 없으므로 버퍼에 값이 들어올 때까지 계속 확인해야 하는데, 이러한 방식을 폴링(Polling) 방식이라하며 매우 비효율적이다.
+
+
+&nbsp;생산자-소비자 패턴에서 소비자 쓰레드가 할 일이 있는지를 확인하는 등의 상황에서 효율적으로 사용할 수 있는 것이 조건 변수(`std::condition_variable`)다. 조건 변수는 조건 함수를 인자로 받아 해당 함수의 반환값이 `false`이면 누군가가 자기를 깨울 때까지 해당 쓰레드를 대기시킨다. 생산자-소비자 패턴에서 생산자 쓰레드가 데이터 저장을 마치면 소비자 쓰레드를 깨우기 위해 조건 변수에게 신호를 주면 된다. `std::condition_variable`을 이용한 생산자-소비자 패턴의 예제 코드는 `../src/producer-consumer_test.cpp`에서 확인할 수 있다.

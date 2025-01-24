@@ -17,7 +17,6 @@ void run(void);
  */
 void downloader(std::deque<std::string>* downloaded, std::size_t ti, std::mutex* mtx, std::condition_variable* cv);
 
-
 /**
  * @brief consumer: page 처리를 시뮬레이션
  */
@@ -75,7 +74,7 @@ void downloader(std::deque<std::string>* downloaded, std::size_t ti, std::mutex*
                         downloaded->push_back(page);
                 }
 
-                // Processor 하나에 시작 신호
+                // processor 하나에 시작 신호
                 cv->notify_one();
         }
 }
