@@ -13,7 +13,7 @@ void func(const Type& arg);
 template <typename InputIterator, typename Function>
 Function std::for_each(InputIterator begin, InputIterator end, Function func);
 ```
-<br>
+
 
 ## std::transform
 
@@ -34,29 +34,3 @@ OutputIterator std::transform(InputIterator begin, InputIterator end, OutputIter
 template <typename InputIterator1, typename InputIterator2, typename OutputIterator, typename BinaryOperation>
 OutputIterator std::transform(InputIterator1 begin1, InputIterator1 end1, InputIterator2 begin2, InputIterator2 end2, OutputIterator d_begin, BinaryOperation binary_op);
 ```
-<br>
-
-## 참고
-
-### Functor
-
-&nbsp;각 원소에 적용할 연산은 람다 함수를 사용하면 간단하게 표현이 가능하나, 특수한 상황에서 Functor를 사용해야하는 경우가 생길 수 있다. Functor는 다음과 같이 작성한다.
-
-```C++
-template <typename T>
-class functor
-{
-public:
-        functor(T value): factor(value) {}
-
-        template <typename U>
-        void operator ()(U& value)
-        {
-                // 필요한 작업
-        }
-private:
-        T factor; // 필요한 경우
-}
-```
-
-&nbsp;`class`대신 `struct`를 사용할 수도 있고, `class`로 구현할 경우 생성자와 괄호 연산자를 클래스 외부에서 정의할 수도 있다(짧은 함수라면 그냥 클래스 정의 내에서 함수 정의 추천). Functor 내 각 매개변수는 필요에 따라 레퍼런스 타입으로 선언한다.

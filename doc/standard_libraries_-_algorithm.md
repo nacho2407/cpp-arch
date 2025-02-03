@@ -73,7 +73,7 @@ vec.push_back(std::make_pair(2, 'e'));
 
 std::stable_sort(vec.begin(), vec.end());
 ```
-<br>
+
 
 ## Container Manipulation
 
@@ -111,11 +111,11 @@ vec.erase(std::remove_if(vec.begin(), vec.end(), [](int e) -> int {
         return e % 2 == 1;
 })); // 홀수 원소 삭제
 ```
-<br>
+
 
 ### Finding
 
-&nbsp;`std::set`과 같은 Associative Container들은 기본적으로 `find` 함수를 제공하지만, `std::vector`같은 **Sequential Container들은 `find` 함수를 기본으로 제공하지 않는다**. 대신 `<algorithm>`의 **`std::find` 함수를 사용**할 수 있는데, 조건에 맞는 원소를 찾으면 **해당 원소를 가리키는 반복자를 반환**한다.
+&nbsp;`std::set<T>`과 같은 Associative Container들은 기본적으로 `find` 함수를 제공하지만, `std::vector<T>`같은 **Sequential Container들은 `find` 함수를 기본으로 제공하지 않는다**. 대신 `<algorithm>`의 **`std::find` 함수를 사용**할 수 있는데, 조건에 맞는 원소를 찾으면 **해당 원소를 가리키는 반복자를 반환**한다.
 
 ```C++
 std::vector<int> vec;

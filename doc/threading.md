@@ -24,7 +24,7 @@ int main(void)
         return 0;
 }
 ```
-<br>
+
 
 ## std::thread::join, std::thread::detach
 
@@ -68,7 +68,7 @@ int main(void)
 &nbsp;C-Style의 `printf`를 쓰는 방법도 있는데, 모던 C++에서 `printf`를 잘 쓰지 않기도 하거니와 동기화를 지원하는 `std::cout`과 달리 비동기식 출력이라 쓰레드 간 문맥 교환이 중간에 발생하면 한 문자열 안에서도 내용이 뒤죽박죽 출력되기 때문에 추천하지 않는다. `std::cout`은 내용이 동기식이라 한 문자열에서 내용이 중간에 끊길 우려는 없다.
 
 
-## std::mutex, std::unique_lock
+## std::mutex, std::unique_lock&lt;T>
 
 &nbsp;병렬 프로그래밍이나 멀티 쓰레딩 환경에서 동일한 리소스에 여러 프로세스(쓰레드)가 접근하려고 하면 실행 순서에 따라 결과가 의도치 않게 나올 수 있는데, 이를 경쟁 조건(Race Condition)이라 한다. 이러한 경쟁 조건을 해결할 수 있는 방법은 여러가지가 있는데, **C++에서는 뮤텍스(Mutex)라는 일종의 잠금 장치를 제공한다**. `std::mutex`는 아래와 같이 사용한다.
 
@@ -116,7 +116,7 @@ int main(void)
 &nbsp;`std::mutex`로 락을 걸게 되면 다른 쓰레드들은 해당 락이 해제될 때까지 무한정 기다리게 되는데, 락을 취득한 쓰레드가 락을 해제하지 않은 채 종료되면 프로그램이 더 이상 진행되지 않는 데드락 상태에 빠질 수 있다. `std::lock_guard`는 스마트 포인터와 같은 래퍼 클래스로, `std::lock_guard` 객체가 해제될 때 자신이 소유하고 있던 `std::mutex`의 락도 함께 해제해준다.
 
 
-&nbsp;`std::unique_lock`은 `std::lock_guard`와 사용법은 조금 다르지만 거의 유사하다. `std::lock_guard`는 명시적인 락 해제가 불가능하지만, `std::unique_lock`은 명시적인 잠금과 해제가 가능하여 더 유연하다. 아래와 같이 사용한다.
+&nbsp;`std::unique_lock<T>`은 `std::lock_guard`와 사용법은 조금 다르지만 거의 유사하다. `std::lock_guard`는 명시적인 락 해제가 불가능하지만, `std::unique_lock<T>`은 명시적인 잠금과 해제가 가능하여 더 유연하다. 아래와 같이 사용한다.
 
 ```C++
 #include <iostream>
@@ -160,7 +160,7 @@ int main(void)
         return 0;
 }
 ```
-<br>
+
 
 ## Producer-Consumer Pattern, std::condition_variable
 
