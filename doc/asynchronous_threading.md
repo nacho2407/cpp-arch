@@ -13,15 +13,15 @@
 #include <iostream>
 #include <thread>
 
-void prom(std::promise<T>int>& p)
+void prom(std::promise<int>& p)
 {
         p.set_value(8);
 }
 
 int main(void)
 {
-        std::promise<T>int> p;
-        std::future<T>int> f = p.get_future();
+        std::promise<int> p;
+        std::future<int> f = p.get_future();
 
         std::thread t(prom, std::ref(p));
 
