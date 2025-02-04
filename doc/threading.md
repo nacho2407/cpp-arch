@@ -131,7 +131,7 @@ void up_one(int* i, std::mutex* mtx)
 
         lk.unlock();
 
-        // 이후 다시 lock 가능능
+        // 이후 다시 lock 가능
 }
 
 void up_two(int* i, std::mutex* mtx)

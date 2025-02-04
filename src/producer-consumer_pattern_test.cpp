@@ -2,6 +2,7 @@
 #include <condition_variable>
 #include <cstddef>
 #include <deque>
+#include <functional>
 #include <iostream>
 #include <mutex>
 #include <string>
@@ -16,12 +17,12 @@ void run(void);
 /**
  * @brief producer: page 다운로드를 시뮬레이션
  */
-void downloader(std::deque<std::string>* downloaded, std::size_t ti, std::mutex* mtx, std::condition_variable* cv);
+void downloader(std::deque<std::string>& downloaded, std::size_t ti, std::mutex& mtx, std::condition_variable& cv);
 
 /**
  * @brief consumer: page 처리를 시뮬레이션
  */
-void processor(std::deque<std::string>* downloaded, std::size_t* num_processed, std::mutex* mtx, std::condition_variable* cv);
+void processor(std::deque<std::string>& downloaded, std::size_t& num_processed, std::mutex& mtx, std::condition_variable& cv);
 
 int main(void)
 {
@@ -42,12 +43,12 @@ void run(void)
         // downloader 쓰레드 시작
         std::vector<std::thread> downloaders;
         for(std::size_t i = 0; i < NUM_THREADS; i++)
-                downloaders.push_back(std::thread(downloader, &downloaded, i, &mtx, &cv));
+                downloaders.push_back(std::thread(downloader, std::ref(downloaded), i, std::ref(mtx), std::ref(cv)));
         
         // processor 쓰레드 시작
         std::vector<std::thread> processors;
         for(std::size_t i = 0; i < NUM_THREADS; i++)
-                processors.push_back(std::thread(processor, &downloaded, &num_procesed, &mtx, &cv));
+                processors.push_back(std::thread(processor, std::ref(downloaded), std::ref(num_procesed), std::ref(mtx), std::ref(cv)));
 
         // page 다운로드 대기
         for(std::size_t i = 0; i < NUM_THREADS; i++)
@@ -61,7 +62,7 @@ void run(void)
                 processors[i].join();
 }
 
-void downloader(std::deque<std::string>* downloaded, std::size_t ti, std::mutex* mtx, std::condition_variable* cv)
+void downloader(std::deque<std::string>& downloaded, std::size_t ti, std::mutex& mtx, std::condition_variable& cv)
 {
         for(std::size_t i = 0; i < NUM_PAGES; i++) {
                 // page 다운로드
@@ -71,36 +72,36 @@ void downloader(std::deque<std::string>* downloaded, std::size_t ti, std::mutex*
 
                 {
                         // mutex를 잠근 후 임계 구역 진입
-                        std::unique_lock<std::mutex> lk(*mtx);
-                        downloaded->push_back(page);
+                        std::unique_lock<std::mutex> lk(mtx);
+                        downloaded.push_back(page);
                 }
 
                 // processor 하나에 시작 신호
-                cv->notify_one();
+                cv.notify_one();
         }
 }
 
-void processor(std::deque<std::string>* downloaded, std::size_t* num_processed, std::mutex* mtx, std::condition_variable* cv)
+void processor(std::deque<std::string>& downloaded, std::size_t& num_processed, std::mutex& mtx, std::condition_variable& cv)
 {
-        while(*num_processed < NUM_PAGES * NUM_THREADS) {
+        while(num_processed < NUM_PAGES * NUM_THREADS) {
                 // mutex를 잠근 후 처리할 page가 다운로드되기 전까지 대기
-                std::unique_lock<std::mutex> lk(*mtx);
+                std::unique_lock<std::mutex> lk(mtx);
 
-                cv->wait(lk, [&] -> bool {
-                        return !downloaded->empty() || *num_processed == NUM_PAGES * NUM_THREADS;
+                cv.wait(lk, [&]() -> bool {
+                        return !downloaded.empty() || num_processed == NUM_PAGES * NUM_THREADS;
                 });
 
                 // 대기 종료 후 이미 모든 page 처리가 끝난 상태이면 쓰레드 종료
-                if(*num_processed == NUM_PAGES * NUM_THREADS)
+                if(num_processed == NUM_PAGES * NUM_THREADS)
                         return;
 
                 // 처리할 page 가져오기
-                std::string page = std::move(downloaded->front());
-                downloaded->pop_front();
+                std::string page = std::move(downloaded.front());
+                downloaded.pop_front();
                 page.append(" processed.\n");
 
                 // 처리한 page 수를 올리며 mutex 잠금 해제
-                (*num_processed)++;
+                num_processed++;
                 lk.unlock();
 
                 // page 처리

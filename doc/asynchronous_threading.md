@@ -117,6 +117,9 @@ int main(void)
 &nbsp;`std::packaged_task<F>` 또한 비동기 작업을 유일하게 쇼유하기 위해 복사 생성이 불가능하므로, `std::thread`를 생성할 때 소유권을 이동시켜야 한다.
 
 
+&nbsp;`std::packaged_task<F>`의 생성자는 함수만 받기 때문에 인자를 전달하고 싶으면 작업을 수행할 쓰레드에서 `std::packaged_task<F>`에 직접 인자를 주면서 실행하거나 생성자에서 `std::bind`를 사용하여 인자와 아예 바인딩시켜 넘겨주면 된다.
+
+
 &nbsp;`std::thread`를 명시하지 않고 비동기 쓰레딩을 할 수 있는 방법도 있다, `std::async`는 `std::packaged_task<F>`처럼 함수의 반환 값으로 `std::future<T>`의 값을 설정한다. `std::thread`를 명시할 때는 해당 비동기 쓰레드가 `std::thread` 객체 생성 시점에 시작되었지만, `std::async`는 객체 생성 시점에 쓰레드를 시작할 지, 값이 필요할 때 시작할 지를 설정할 수 있다. 이 때는 `std::launch`를 추가로 명시한다. 명시하지 않으면 따로 default 값이 없이 CPU가 알아서 실행 시점을 결정하기 때문에 필요한 경우 반드시 명시하는 것이 좋다.
 
 &nbsp;`std::packaged_task<F>`와 `std::async`는 특히 람다 표현식과 함께 사용할 때 코드가 매우 깔끔해진다. 예시는 아래와 같다.

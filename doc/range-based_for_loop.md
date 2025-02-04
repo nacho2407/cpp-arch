@@ -1,6 +1,7 @@
 # Range-based for loop
 
-&nbsp;`<algorithm>`에 정의되어 있다.
+&nbsp;`<algorithm>`에 정의되어 있다. C++ 11부터는 for문 내에서 `:`를 이용한 가독성 좋은 범위 기반 루프도 가능하지만 `<algorithm>`의 `std::for_each`는 조금 더 다양하게 활용할 수 있기 때문에 상황에 따라 더 적절한 방법을 선택해서 사용하자.
+
 
 ## std::for_each
 
@@ -13,6 +14,9 @@ void func(const Type& arg);
 template <typename InputIterator, typename Function>
 Function std::for_each(InputIterator begin, InputIterator end, Function func);
 ```
+<br>
+
+&nbsp;C++ 17부터는 놀랍게도 `std::for_each`를 이용하여 병렬 처리까지 가능하다! **첫번째 인자로 `std::excution::par`을 주면 해당 `std::for_each`는 병렬 실행**된다.
 
 
 ## std::transform
