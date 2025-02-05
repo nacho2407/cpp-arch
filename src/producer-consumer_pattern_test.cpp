@@ -15,12 +15,12 @@ const std::size_t NUM_THREADS = 4;
 void run(void);
 
 /**
- * @brief producer: page 다운로드를 시뮬레이션
+ * @brief Producer: page 다운로드를 시뮬레이션
  */
 void downloader(std::deque<std::string>& downloaded, std::size_t ti, std::mutex& mtx, std::condition_variable& cv);
 
 /**
- * @brief consumer: page 처리를 시뮬레이션
+ * @brief Consumer: page 처리를 시뮬레이션
  */
 void processor(std::deque<std::string>& downloaded, std::size_t& num_processed, std::mutex& mtx, std::condition_variable& cv);
 
@@ -70,13 +70,12 @@ void downloader(std::deque<std::string>& downloaded, std::size_t ti, std::mutex&
 
                 std::this_thread::sleep_for(std::chrono::milliseconds(128 * ti));
 
-                {
-                        // mutex를 잠근 후 임계 구역 진입
-                        std::unique_lock<std::mutex> lk(mtx);
-                        downloaded.push_back(page);
-                }
+                // 뮤텍스를 잠근 후 임계 구역 진입
+                std::unique_lock<std::mutex> lk(mtx);
+                downloaded.push_back(page);
 
-                // processor 하나에 시작 신호
+                // 잠금 해제 후 processor 하나에 시작 신호
+                lk.unlock();
                 cv.notify_one();
         }
 }
@@ -84,7 +83,7 @@ void downloader(std::deque<std::string>& downloaded, std::size_t ti, std::mutex&
 void processor(std::deque<std::string>& downloaded, std::size_t& num_processed, std::mutex& mtx, std::condition_variable& cv)
 {
         while(num_processed < NUM_PAGES * NUM_THREADS) {
-                // mutex를 잠근 후 처리할 page가 다운로드되기 전까지 대기
+                // 뮤텍스를 잠근 후 처리할 page가 다운로드되기 전까지 대기
                 std::unique_lock<std::mutex> lk(mtx);
 
                 cv.wait(lk, [&]() -> bool {
@@ -100,7 +99,7 @@ void processor(std::deque<std::string>& downloaded, std::size_t& num_processed, 
                 downloaded.pop_front();
                 page.append(" processed.\n");
 
-                // 처리한 page 수를 올리며 mutex 잠금 해제
+                // 처리한 page 수를 올리며 뮤텍스 잠금 해제
                 num_processed++;
                 lk.unlock();
 
