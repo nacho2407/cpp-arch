@@ -52,7 +52,7 @@ namespace nacho
                 workers.reserve(s);
 
                 // std::vector<T>::emplace_back을 통해 람다 함수로 std::thread 생성 후 workers에 추가
-                for(int i = 0; i < s; i++) {
+                for(std::size_t i = 0; i < s; i++) {
                         workers.emplace_back([this]() {
                                 this->worker();
                         });
