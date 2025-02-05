@@ -108,8 +108,8 @@ namespace nacho
                                 return (!this->jobs.empty() || this->is_disabled);
                         });
 
-                        // ThreadPool이 사용 정지된 상태이면 쓰레드 종료
-                        if(is_disabled)
+                        // 남은 작업이 없고 ThreadPool이 사용 정지된 상태이면 쓰레드 종료
+                        if(this->jobs.empty() && is_disabled)
                                 return;
 
                         // jobs에서 수행할 작업 꺼내기
