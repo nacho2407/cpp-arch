@@ -41,7 +41,7 @@ namespace nacho
                 bool is_disabled;
 
                 /**
-                 * @brief std::thread에서 실행될 worker
+                 * @brief std::thread에서 실행될 함수
                  */
                 void worker(void);
         };
