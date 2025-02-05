@@ -144,12 +144,12 @@ void run(void)
         nacho::ThreadPool pool(4);
 
         std::vector<std::future<int>> futures;
-        for(int i = 0; i < TEST_SIZE; i++)
+        for(std::size_t i = 0; i < TEST_SIZE; i++)
                 futures.push_back(pool.enqueue_job(test_job, i % 3 + 1, i));
 
         std::ostringstream oss;
 
-        for(int i = 0; i < TEST_SIZE; i++) {
+        for(std::size_t i = 0; i < TEST_SIZE; i++) {
                 oss.str("");
                 oss.clear();
 
