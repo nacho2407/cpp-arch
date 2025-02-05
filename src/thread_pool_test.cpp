@@ -79,14 +79,14 @@ namespace nacho
                 if(is_disabled)
                         throw std::runtime_error("ThreadPool has been disabled.");
 
-                // 모든 타입의 함수를 처리하기 위해 템플릿을 사용하여 job을 받고, std::future<T>를 통해 반환값을 전달하는 작업으로 래핑
+                // 모든 타입의 함수를 처리하기 위해 템플릿을 사용하여 job을 받고, std::future<T>를 통해 반환값을 전달하는 std::packaged_task<F>로 래핑
                 // worker에서 수행될 작업을 해제하지 않으면서 효율을 높히기 위해 std::shared_ptr<T>를 사용(그냥 사용하면 함수 반환 시 수행될 작업이 해제됨)
                 // std::forward<T>를 통해 완벽한 전달 패턴 구현
                 using return_type = typename std::invoke_result_t<F, Args...>;
                 auto job_ptr = std::make_shared<std::packaged_task<return_type(void)>>(std::bind(std::forward<F>(job), std::forward<Args>(args)...));
                 std::future<return_type> job_result = job_ptr->get_future();
 
-                // 뮤텍스를 잠근 후 void(void) 타입의 람다 함수로 수행할 작업을 래핑하여 jobs에 추가
+                // 뮤텍스를 잠근 후 수행할 std::packaged_task<F>를 void(void) 타입의 람다 함수로 래핑하여 jobs에 추가
                 std::unique_lock<std::mutex> lk(m);
                 jobs.push([job_ptr]() {
                         (*job_ptr)();
@@ -95,14 +95,14 @@ namespace nacho
                 lk.unlock();
                 cv.notify_one();
 
-                // std::future<T>를 통해 job의 반환값 전달
+                // job의 반환값을 전달할 std::future<T> 반환
                 return job_result;
         }
 
         void ThreadPool::worker(void)
         {
                 while(true) {
-                        // 뮤텍스를 잠근 후 수행할 작업이 추가될 때까지 대기기
+                        // 뮤텍스를 잠근 후 수행할 작업이 추가될 때까지 대기
                         std::unique_lock<std::mutex> lk(m);
                         cv.wait(lk, [this]() {
                                 return (!this->jobs.empty() || this->is_disabled);
