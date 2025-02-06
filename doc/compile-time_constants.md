@@ -5,7 +5,7 @@
 
 ## constexpr
 
-&nbsp;이렇게 컴파일 타임에 바로 확인할 수 있도록 상수를 정의하는 방법이 있는데, `constexpr` 키워드를 사용하는 것이다. **`constexpr`은 해당 변수가 컴파일 타임에 확인 가능한 상수임을 알리는 키워드**로, 런타임에는 `const`와 동일하게 취급된다. 때문에 아래와 같은 코드가 가능하다.
+&nbsp;이렇게 컴파일 타임에 바로 확인할 수 있도록 상수를 정의하는 방법이 있는데, `constexpr` 키워드를 사용하는 것이다. **`constexpr`은 해당 변수가 컴파일 타임에 확인 가능한 상수임을 알리는 키워드**로, 런타임에는 `const`와 동일하게 취급된다. 덕분에 아래와 같은 코드가 가능하다.
 
 ```C++
 constexpr std::size_t SIZE = 3;
@@ -38,4 +38,69 @@ int main(void)
 ```
 
 
-(작성중) - constexpr 생성자, if constexpr
+## constexpr Constructor
+
+&nbsp;앞서 함수가 `constexpr` 상수를 반환하기 위해서는 리터럴 타입이 아닌 변수를 정의해서는 안된다라고 얘기했었다. 여기서 리터럴 타입이란 보통 `void` 및 `char`, `int` 등 스칼라 타입을 의미하는데, 이 외에도 리터럴 타입이 될 수 있는 클래스를 정의하는 방법이 있다. 어떤 클래스가 리터럴 타입이 되기 위해서는 **디폴트 소멸자**를 가지면서, **Arggregate 타입(사용자 정의 생성자, 소멸자가 없고 모든 데이터 멤버가 `public`)이거나 `constexpr` 생성자를 가지면서 복사 및 이동 생성자가 없어야 한다**. 참고로 람다 함수도 리터럴 타입이다.
+
+```C++
+class Val
+{
+public:
+        constexpr Val(int n): m_i(n) { }
+
+        constexpr int get(void) { return m_i; };
+private:
+        int m_i;
+}
+
+constexpr Val add(Val a, Val b)
+{
+        // Val이 리터럴 타입이기 때문에 constexpr Val을 반환 가능
+
+        return { a.get() + b.get() }; // 균일한 초기화 표현식
+}
+
+int main(void)
+{
+        constexpr Val v1{1};
+        constexpr Val v2{2};
+
+        int arr[add(v1, v2).get()] = { 0 };
+
+        return 0;
+}
+```
+
+&nbsp;당연하지만, `constexpr` 생성자를 가지는 클래스라도 사용할 멤버 함수가 `constexpr` 상수를 반환하지 않는 함수라면 컴파일 타임에 사용할 수 없다. 하지만 모든 멤버 함수가 `constexpr` 상수를 반환해야 하는 것은 아니다.
+
+
+## if constexpr
+
+&nbsp;`if constexpr`은 위의 `constexpr`과는 조금 다른 기능이다. 우리가 동일한 작업을 하는 함수를 일반 타입을 받을 때와 포인터 타입을 받을 때로 나누어서 개발하고자 할 때, 오버로딩을 하지 않고 하나의 함수 내에서 타입을 구분하여 작성하는 경우를 생각해보자.
+
+```C++
+template <typename T>
+void is_ptr(T t)
+{
+        if(std::is_pointer_v<T>)
+                std::cout << "pointer value: " << *t << std::endl;
+        else
+                std::cout << "primitive value: " << t << std::endl;
+}
+```
+
+&nbsp;`std::is_pointer_v<T>` 또는 `std::is_pointer<T>::value`는 `<type_traits>`의 기능으로, `typename T`가 포인터 형인지를 확인할 때 사용된다. 위 코드의 문제는 템플릿이 컴파일 타임에 인스턴스화될 때 만약 `typename T`가 기본 자료형이라면 `*t`가 컴파일이 불가능한 코드가 된다는 것이다.
+
+
+&nbsp;이런 경우에 사용하는 것이 `if constexpr`이다. `if constexpr`은 **조건문이 거짓일 경우 `if constexpr`문 내의 내용을 아예 컴파일하지 않는다**.
+
+```C++
+template <typename T>
+void is_ptr(T t)
+{
+        if constexpr(std::is_pointer_v<T>)
+                std::cout << "pointer value: " << *t << std::endl;
+        else
+                std::cout << "primitive value: " << t << std::endl;
+}
+```
