@@ -60,7 +60,89 @@ int main(void)
 
 ## std::regex_search
 
-&nbsp;정확히 패턴이 일치하는 문자열을 찾는 `std::regex_match`와 달리, **어떤 패턴을 부분 문자열로 포함하는 문자열을 검색하고 싶다면 `std::regex_search`를 사용한다**. (작성중)
+&nbsp;정확히 패턴이 일치하는 문자열을 찾는 `std::regex_match`와 달리, **어떤 패턴을 부분 문자열로 포함하는 문자열을 검색하고 싶다면 `std::regex_search`를 사용한다**. 사용법은 `std::regex_match`와 동일하다.
 
 
-(작성중) - std::regex_search & std::regex::suffix, std::sregex_iterator, std::regex_replace & back reference, nested capture group
+&nbsp;`std::regex_search`를 사용할 때 주의할 점은, 검색 작업을 반복적으로 수행할 때, 인자로 동일한 문자열을 넘겨준다면 항상 동일한(최초의) 결과만 반환한다는 것이다. 이를 위해 `std::match_results<I>::suffix`를 사용한다. 이는 지금까지 매치된 부분의 바로 뒷 부분부터 문자열 끝까지 반환한다. 사용법은 아래와 같다.
+
+```C++
+#include <iostream>
+#include <regex>
+#include <string>
+
+int main(void)
+{
+        std::string s;
+        std::cin >> s;
+
+        std::regex r(R"([a]+bc)");
+        std::smatch sm;
+
+        while(std::regex_search(s, sm, r)) {
+                std::cout << "Found string >> " << sm.str() << "\n";
+
+                s = sm.suffix();
+        }
+
+        std::cout << std::flush;
+
+        return 0;
+}
+```
+
+&nbsp;참고로 `R"(...)"` 형태는 Raw String Literal을 의미하는 것으로, `\n` 같은 이스케이프 문자를 포함해 문자열 내 모든 문자를 있는 그대로 인식하는 포맷이다.
+
+
+## std::sregex_iterator
+
+&nbsp;`std::regex_search` 작업을 더 간단하게 수행할 수 있는 방법으로, `std::sregex_iterator`가 있다. `std::regex_iterator` 중 `std::string`을 사용하는 반복자로, 다음과 같이 사용한다.
+
+```C++
+#include <iostream>
+#include <regex>
+#include <string>
+
+int main(void)
+{
+        std::string s;
+        std::cin >> s;
+
+        std::regex r(R"([a]+bc)");
+
+        auto begin = std::sregex_iterator(s.begin(), s.end(), r);
+        auto end = std::sregex_iterator();
+        for(; begin != end; begin++)
+                std::cout << "Found string >> " << begin->str() << "\n";
+
+        std::cout << std::flush;
+
+        return 0;
+}
+```
+
+
+## std::regex_replace
+
+&nbsp;`std::regex_replace`는 지정한 패턴을 입력받은 문자열로 모두 치환한 새 문자열을 반환한다. 다음과 같이 사용한다.
+
+```C++
+#include <iostream>
+#include <regex>
+#include <string>
+
+int main(void)
+{
+        std::string input;
+        std::cin >> input;
+
+        std::regex r(R"(([a]+)(b)c)");
+
+        input = std::regex_replace(input, r, "$2$1c");
+
+        std::cout << "Replacing result >> " << input << std::endl;
+
+        return 0;
+}
+```
+
+&nbsp;치환할 문자열을 입력받을 때 사용한 `$1` 같은 형태는 캡쳐 그룹을 지정한 것으로, Back Reference라고 부른다. flex 등을 사용할 때도 자주 볼 수 있다. 캡쳐 그룹 안에 캡쳐 그룹을 중첩되게 사용하는 경우가 있는데, Back Reference를 이용하여 이를 지정하려면, 그 순서는 해당 캡쳐 그룹을 감싸는 여는 괄호의 등장 순서라고 생각하면 된다.
