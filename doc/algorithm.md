@@ -1,4 +1,7 @@
-# Standard Libraries - &lt;algorithm>
+# Algorithm
+
+&nbsp;`<algorithm>`에 포함된 기능을 몇 가지 확인해보자.
+
 
 ## Sorting
 

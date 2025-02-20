@@ -23,7 +23,7 @@ void foo(T&& x)
 }
 ```
 
-&nbsp;위와 같이 구현하면 'Rvalue만 인자로 받을 수 있게되는 것 아닌가?'하고 생각할 수도 있지만, C++ 11부터 도입된 **레퍼런스 겹침 규칙(Reference Collapsing Rule)**에 의해 `T&`(Lvalue)가 들어오면 `T&&&` -> `T&`, `T&&`(Rvalue)가 들어오면 자동으로 `T&&&&` -> `T&&`로 추론되기 때문에 Lvalue와 Rvalue를 모두 받을 수 있다.
+&nbsp;위와 같이 구현하면 'Rvalue만 인자로 받을 수 있게되는 것 아닌가?'하고 생각할 수도 있지만, C++ 11부터 도입된 **레퍼런스 겹침 규칙**(Reference Collapsing Rule)에 의해 `T&`(Lvalue)가 들어오면 `T&&&` -> `T&`, `T&&`(Rvalue)가 들어오면 자동으로 `T&&&&` -> `T&&`로 추론되기 때문에 Lvalue와 Rvalue를 모두 받을 수 있다.
 
 
 &nbsp;이러한 패턴을 이용하는 함수를 **보편적 레퍼런스**(Universal Reference)라고 하는데, 주의해야 할 점은 아래 코드와 같이
