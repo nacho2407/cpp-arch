@@ -81,6 +81,51 @@ int main(void)
 &nbsp;`std::bind`는 **어떤 함수의 인자가 특정한 무언가로 반드시 정해져 있는 함수를 만들 필요가 있을 때, 새로운 함수를 만들 필요없이 간단하게 그러한 함수를 만들 수 있게 해준다**. 아래와 같이 사용한다.
 
 ```C++
-auto new_func = std::bind(function, a, b);
 // 인자가 a, b로 정해져있는 function 함수 반환
+auto new_func = std::bind(function, a, b);
+```
+
+
+## std::reference_wrapper&lt;T>
+
+&nbsp;`std::optional<T>`(C++ 17)등을 사용할 때처럼 레퍼런스 형을 그냥 `&` 기호를 통해 사용할 수 없는 경우가 있다. 이런 경우에도 레퍼런스처럼 사용할 수 있는 래퍼 클래스가 있는데 그것이 `std::reference_wrapper<T>`다. `std::reference_wrapper<T>` 객체를 생성하기 위해서는 `std::ref`를 사용하면 된다. 참고로 C++ 23부터는 `std::optional<T>`에 레퍼런스 타입도 사용이 가능하다.
+
+```C++
+#include <functional>
+#include <iostream>
+#include <optional>
+
+class Nacho
+{
+public:
+        Nacho(int i): n(i) {  }
+
+        int get(void);
+        void set(int i);
+private:
+        int n;
+};
+
+int Nacho::get(void)
+{
+        return n;
+}
+
+void Nacho::set(int i)
+{
+        n = i;
+}
+
+int main(void)
+{
+        Nacho n(8);
+        std::optional<std::reference_wrapper<Nacho>> r_n = std::ref(n);
+
+        // std::reference_wrapper<T>는 템플릿 등에서 사용될 때는 명시적으로 get을 통해 값을 이용해야 함.
+        r_n->get().set(16);
+
+        std::cout << "n.get(): " << n.get() << std::endl;
+
+        return 0;
+}
 ```
