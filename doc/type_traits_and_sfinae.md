@@ -167,6 +167,38 @@ public:
 &nbsp;C++ 11에 추가된 키워드 중에 `static_assert`라는 것이 있는데, `constexpr bool`을 검사하여 거짓이면 컴파일 과정에서 에러를 출력하는 키워드다. `<type_traits>`의 메타 함수들과 함께 사용하여 정말 특정 타입이 와야하는 경우를 보장할 수 있다.
 
 
+## Runtime Type Checking
+
+&nbsp;`<type_traits>`에 포함되어 있는 `std::is_same_v<T>`는 템플릿 인자로 받은 두 타입이 같은 타입인지를 확인한다. C++에서는 const 여부나 레퍼런스형 여부도 모두 확인하기 때문에 보통 이러한 미사여구를 떼어주는 `std::decay_t<T>`와 함께 사용한다.
+
+
+&nbsp;`if constexpr`과 함께 사용되어 컴파일 타임 타입 분기도 수행할 수 있다.
+
+```C++
+#include <iostream>
+#include <type_traits>
+
+template <typename T>
+void int_checking()
+{
+        if constexpr(std::is_same_v<std::decay_t<T>, int>)
+                std::cout << "T is int!" << std::endl;
+        else
+                std::cout << "T is not int!" << std::endl;
+}
+
+int main(void)
+{
+        int_checking<int>();
+        int_checking<const int&>();
+        int_checking<long long int>();
+        int_checking<double>();
+        
+        return 0;
+}
+```
+
+
 ## SFINAE
 
 &nbsp;`<type_traits>`에는 해당 객체가 클래스 타입인지를 확인하는 메타 함수가 있다! 가능한 구현은 아래와 같은 형태다.

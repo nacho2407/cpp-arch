@@ -75,3 +75,10 @@ private:
 ## Scope Operator
 
 &nbsp;`.` 연산자나 `->` 연산자와는 달리 스코프 연산자 `::`는 클래스의 정적 멤버 변수 접근에 사용된다. 정적 멤버 또한 `.`나 `->`를 통해 접근할 수 있지만, `::`를 사용하는 것이 더 일반적이다. `using`을 이용한 타입 멤버 또한 스코프 연산자를 통해 접근한다.
+
+
+## Exception Handling
+
+&nbsp;기본 C++ 문법이라 짧게만 정리한다. `try` 문을 실행하다가 `throw`로 예외가 던져지면 `catch` 문에서 잡아 처리한다.
+
+&nbsp;C++의 모든 예외는 `<exception>` 헤더의 `std::exception` 클래스를 상속받으며, `std::exception::what` 함수를 통해 예외에 대한 설명을 반환한다. `<stdexcept>` 헤더는 구체적인 표준 예외 클래스를 제공한다. 이것저것 있지만 `std::runtime_error` 정도만 알고가자.
