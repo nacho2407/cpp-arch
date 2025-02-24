@@ -159,6 +159,6 @@ int main(void)
 &nbsp;파일 삭제와 함께 `std::filesystem::directory_iterator`를 사용할 때 주의할 점이 있는데, `std::vector<T>`의 원소 삭제 후 기존 반복자(`std::random_access_iterator`)가 무효화되는 것처럼, `std::filesystem::directory_iterator` 또한 파일 삭제 등 디렉토리의 구조가 바뀔 때마다 무효화되기 때문에 디렉토리 구조가 바뀐다면 다시 초기화해주어야 한다.
 
 
-## Exception Handling
+## File Error Handling
 
 &nbsp;파일 처리 중 발생하는 예외를 코드에서 처리하고 싶지 않다면, 파일 관련 함수들에게 마지막 인자로 `std::error_code`를 전달하면 된다. 이 경우 예외가 발생할 상황이 생기면 예외를 전파하는 대신 `std::error_code` 객체에 발생한 오류를 설정한다. `<filesystem>`의 예외 발생 가능 함수들은 모두 `std::error_code`를 통한 오버로드를 지원한다.

@@ -122,6 +122,7 @@ int main(void)
 
 &nbsp;`std::thread`를 명시하지 않고 비동기 쓰레딩을 할 수 있는 방법도 있다, `std::async`는 `std::packaged_task<F>`처럼 함수의 반환 값으로 `std::future<T>`의 값을 설정한다. `std::thread`를 명시할 때는 해당 비동기 쓰레드가 `std::thread` 객체 생성 시점에 시작되었지만, `std::async`는 객체 생성 시점에 쓰레드를 시작할 지, 값이 필요할 때 시작할 지를 설정할 수 있다. 이 때는 `std::launch`를 추가로 명시한다. 명시하지 않으면 따로 default 값이 없이 CPU가 알아서 실행 시점을 결정하기 때문에 필요한 경우 반드시 명시하는 것이 좋다.
 
+
 &nbsp;`std::packaged_task<F>`와 `std::async`는 특히 람다 표현식과 함께 사용할 때 코드가 매우 깔끔해진다. 예시는 아래와 같다.
 
 ```C++

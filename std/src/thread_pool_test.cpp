@@ -141,7 +141,7 @@ int main(void)
 
 void run(void)
 {
-        nacho::ThreadPool pool(4);
+        nacho::ThreadPool pool(9);
 
         std::vector<std::future<int>> futures;
         for(std::size_t i = 0; i < TEST_SIZE; i++)

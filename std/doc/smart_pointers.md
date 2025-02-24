@@ -50,7 +50,7 @@ void mkdorito(void)
 ```C++
 auto p_d = std::make_unique<dorito>(8);
 ```
-<br>
+
 
 ## std::shared_ptr&lt;T>
 
@@ -132,7 +132,7 @@ std::shared_ptr<dorito> dorito::get_my_dorito()
 dorito* d = new dorito(8);
 std::shared_ptr<dorito> p_d = d->get_my_dorito(); // 에러 발생
 ```
-<br>
+
 
 ## std::weak_ptr&lt;T>
 
