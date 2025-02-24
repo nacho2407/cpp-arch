@@ -9,4 +9,4 @@
 ## Makefile
 
 
-(작성중) - Makefile의 기본 구성 요소, `\t`와 `\s`의 차이, 변수, `=`와 `:=`의 차이, 자주 사용되는 변수, PHONY, 패턴 활용, 자동으로 prerequisite 만들기(`-MMD`, `-MP`), 멀티 쓰레딩(`-j<코어 개수>`)
+(작성중) - GCC/MSVC/LLVM의 차이, Makefile의 기본 구성 요소, `\t`와 `\s`의 차이, 변수, `=`와 `:=`의 차이, 자주 사용되는 변수, PHONY, 패턴 활용, 자동으로 prerequisite 만들기(`-MMD`, `-MP`), 멀티 쓰레딩(`-j<쓰레드 수>`), CMake의 필요성
