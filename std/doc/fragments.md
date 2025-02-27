@@ -1,6 +1,6 @@
 # Fragments
 
-&nbsp;단락 모음.
+단락 모음
 
 
 ## Keywords
@@ -82,3 +82,79 @@ private:
 &nbsp;기본 C++ 문법이라 짧게만 정리한다. `try` 문을 실행하다가 `throw`로 예외가 던져지면 `catch` 문에서 잡아 처리한다.
 
 &nbsp;C++의 모든 예외는 `<exception>` 헤더의 `std::exception` 클래스를 상속받으며, `std::exception::what` 함수를 통해 예외에 대한 설명을 반환한다. `<stdexcept>` 헤더는 구체적인 표준 예외 클래스를 제공한다. 이것저것 있지만 `std::runtime_error` 정도만 알고가자.
+
+
+## File Stream Options
+
+&nbsp;여러 옵션을 연결할 때는 비트와이즈 OR 기호(`|`)를 사용한다.
+
+- `std::ios::in`: 파일을 읽기 전용 모드로 사용, 파일이 없으면 에러 발생
+
+- `std::ios::binary`: 파일을 바이너리 모드로 사용, 디폴트는 텍스트 모드
+
+- `std::ios::ate`: 파일을 열자마자 파일의 끝으로 포인터 이동, 파일 크기를 구할 때 유용
+
+- `std::ios::app`: 파일을 새로 생성하는 것이 아니라 파일 끝에 덧붙임, `std::ofstream`의 디폴트는 파일 생성 / 덮어쓰기 모드(`std::ios::trunc`)
+
+
+## Stream Buffer
+
+&nbsp;만약 파일을 읽을 때 따로 조작을 거치지 않고 이용하고자 할 때 **반복문을 사용하지 않고 파일의 전체 내용을 한 번에 받을 수 있는 방법**이 있다. `<fstream>`의 `std::ifstream`은 `std::ifstream::rdbuf`라는 함수를 포함하고 있는데, 이 함수는 `std::streambuf`라는 스트림 버퍼를 반환한다. 스트림 버퍼는 표준 입출력 스트림, 문자열 스트림(`std::stringstream`), 파일 스트림 등 대부분의 스트림에서 변환없이 사용할 수 있어 그 활용도가 높다.
+
+```C++
+#include <fstream>
+#include <iostream>
+
+int main(void)
+{
+        std::ifstream src("src.txt");
+        std::ofstream dst("dst.txt");
+
+        if(!src || !dst) {
+                std::cerr << "Cannot open file.\n";
+
+                return 1;
+        }
+
+        dst << src.rdbuf();
+
+        std::cout << "File copying complete." << std::endl;
+        
+        return 0;
+}
+```
+
+
+## Operating Systeme Mecros
+
+&nbsp;크로스 플랫폼을 지향하는 C++ 표준에 명시된 내용은 아니지만, 대부분의 컴파일러에서는 운영체제에 따라 달라질 수 있는 코드를 위해 운영체제 별로 특별한 매크로를 미리 정의해둔다.
+
+- Microsoft Windows: `_WIN32`, `_WIN64`(64비트 운영체제의 경우 둘 다 정의되어 있음)
+
+- Linux: `__linux__`
+
+- Apple Mac: `__APPLE__`
+
+- UNIX: `__unix__`
+
+```C++
+#include <iostream>
+
+int main(void)
+{
+        #ifdef _WIN32
+                std::cout << "I'm on Microsoft Windows!";
+        #elif __linux__
+                std::cout << "I'm on Linux!";
+        #elif __APPLE__
+                std::cout << "I'm on Apple Mac!";
+        #elif __unix__
+                std::cout << "I'm on UNIX!";
+        #else
+                std::cout << "I'm on Unknown Operating System!";
+
+        std::cout << std::endl;
+
+        return 0;
+}
+```

@@ -10,7 +10,7 @@
 
 &nbsp;Make의 `Makefile`처럼 CMake는 `CMakeLists.txt`라는 파일을 입력으로 사용한다. `CMakeLists.txt`에 기본적으로 포함되어야 하는 내용은 아래와 같다.
 
-```CMakeLists.txt
+```Text
 cmake_minimum_required(VERSION 3.11)
 
 project(
@@ -21,7 +21,7 @@ project(
 )
 ```
 
-&nbsp;CMake도 어느정도 역사가 긴 프로그램이기 때문에(2025.02. 기준 4.0 Pre-release) 문법이나 주로 사용하는 기능들이 달라져 왔는데, 현재 자주 사용되는 문법들은 대부분 메이저 버전 3부터 사용되던 기능들이므로 `cmake_minimum_required`에 해당 문법이 사용 가능한 최소 버전을 입력한다. 일반적으로 `FetchContent`가 사용되기 시작한 `VERSION 3.11`을 사용한다.
+&nbsp;CMake도 어느정도 역사가 긴 프로그램이기 때문에(2025.02. 기준 4.0 Pre-release) 문법이나 주로 사용하는 기능들이 달라져 왔는데, 현재 자주 사용되는 문법들은 대부분 메이저 버전 3부터 사용되던 기능들이므로 `cmake_minimum_required`에 해당 문법이 사용 가능한 최소 버전을 입력한다. 일반적으로 `FetchContent` 모듈이 추가된 `VERSION 3.11`을 사용한다.
 
 
 &nbsp;`project`에는 본 프로젝트의 정보를 입력한다. 필수로 프로젝트 이름만 작성하면 되고, `VERSION`같은 내용들은 필수가 아니다.
@@ -31,7 +31,7 @@ project(
 
 &nbsp;이제 우리가 빌드할 목표 프로그램을 명시한다. `add_excutable`에 우리가 빌드할 프로그램 이름(Target)과 해당 프로그램을 빌드하기 위해 필요한 파일들(Prerequisites)을 정의한다.
 
-```CMakeLists.txt
+```Text
 add_excutable(test test.cpp)
 ```
 
@@ -40,7 +40,7 @@ add_excutable(test test.cpp)
 
 &nbsp;Target 별로 컴파일 할 때 옵션을 다르게 지정할 수 있다. `target_compile_options`는 특정 Target의 컴파일 옵션을 지정하는 역할을 한다.
 
-```CMakeLists.txt
+```Text
 target_compile_options(test -g -std=c++20 -stdlib=libc++ -lc++abi -O2)
 ```
 
@@ -64,14 +64,14 @@ target_compile_options(test -g -std=c++20 -stdlib=libc++ -lc++abi -O2)
 
 &nbsp;라이브러리 디렉토리에 빌드를 위한 `CMakeLists.txt` 파일을 하나 더 생성하고, 프로젝트 단위의 `CMakeLists.txt`에서는 `add_subdirectory`로 라이브러리 빌드를 위한 `CMakeLists.txt`가 포함된 디렉토리를 지정한다.
 
-```CMakeLists.txt
+```Text
 add_subdirectory(lib)
 ```
 <br>
 
 &nbsp;라이브러리의 헤더 파일이 `include` 등 다른 디렉토리에 존재한다면 프로젝트 단위 `CMakeLists.txt`에서 해당 위치를 `target_include_directories`로 지정한다.
 
-```CMakeLists.txt
+```Text
 target_include_directories(test ${CMAKE_SOURCE_DIR}/include)
 ```
 
@@ -80,14 +80,14 @@ target_include_directories(test ${CMAKE_SOURCE_DIR}/include)
 
 &nbsp;이후 실제 사용할 라이브러리는 `target_link_libraries`로 지정한다.
 
-```CMakeLists.txt
+```Text
 target_link_libraries(test my_lib)
 ```
 <br>
 
 &nbsp;최종적으로 프로젝트 단위의 `CMakeLists.txt`는 아래와 같은 형태다. 주석은 Make와 동일하게 `#`로 처리한다.
 
-```CMakeLists.txt
+```Text
 # /CMakeLists.txt
 cmake_minimum_required(VERSION 3.11)
 
@@ -109,7 +109,7 @@ target_include_directories(test ${CMAKE_SOURCE_DIR}/include)
 
 &nbsp;이제 라이브러리 빌드를 위한 `CMakeLists.txt`를 작성해보자. 실행 파일을 `add_excutable`로 추가했던 것처럼 라이브러리와 해당 라이브러리를 빌드하기 위한 파일들을 `add_library`에 추가한다.
 
-```CMakeLists.txt
+```Text
 add_library(my_lib STATIC my_lib.cpp)
 ```
 
@@ -118,7 +118,7 @@ add_library(my_lib STATIC my_lib.cpp)
 
 &nbsp;이후 라이브러리의 `CMakeLists.txt`에도 헤더 파일 위치와 컴파일 옵션등을 명시한다. 최종적인 라이브러리 `CMakeLists.txt`는 아래와 같은 형태다.
 
-```CMakeLists.txt
+```Text
 # /lib/CMakeLists.txt
 add_library(my_lib STATIC my_lib.cpp)
 target_include_directories(my_lib PRIVATE ${CMAKE_SOURCE_DIR}/include)
@@ -147,21 +147,25 @@ target_compile_options(my_lib PRIVATE -std=c++20 -stdlib=libc++ -lc++abi -O2)
 
 &nbsp;C/C++ 프로젝트에 대부분 사용되는 CMake는 이러한 외부 라이브러리를 쉽게 설치하고 불러올 수 있도록 `FetchContent`라는 CMake 내부 모듈을 제공한다.
 
-```CMakeLists.txt
+```Text
 include(FetchContent)
 FetchContent_Declare(
-        Fmt
+        fmt
         GIT_REPOSITORY "https://github.com/fmtlib/fmt"
         GIT_TAG "11.1.3"
 )
-FetchContent_MakeAvailable(Fmt)
+FetchContent_MakeAvailable(fmt)
+
+target_link_libraries(my_lib PRIVATE fmt::fmt)
 ```
-<br>
+
+&nbsp;참고로 외부 라이브러리를 링킹할 때 `target_link_libraries` 안에서 그냥 `fmt`가 아니라 `fmt::fmt`와 같이 정확한 타겟 이름을 넘겨주는 것이 최신 CMake 표준 방식이라고 한다.
+
 
 &nbsp;`FetchContent` 모듈을 사용하기 위해서는 `include(FetchContent)`를 통해 들여온 다음 `FetchContent_Declare`를 통해 외부 라이브러리를 다운로드하고, `FetchContent_MakeAvailable`을 통해 외부 라이브러리를 프로젝트에 추가한다.
 
 
-&nbsp;위의 경우에는 Git Repository를 통해 라이브러리를 받아오는 방법이다. `GIT_REPOSITORY`를 통해 받아올 라이브러리의 주소를 정의하고 `GIT_TAG`는 필수는 아니지만 원하는 릴리즈가 있다면 해당 릴리즈의 태그를 정의한다.
+&nbsp;위의 경우는 Git Repository를 통해 라이브러리를 받아오는 방법이다. `GIT_REPOSITORY`를 통해 받아올 라이브러리의 주소를 정의하고 `GIT_TAG`는 필수는 아니지만 원하는 릴리즈가 있다면 해당 릴리즈의 태그를 정의한다.
 
 
 &nbsp;`FetchContent`를 통해서 외부 라이브러리를 받아오려면 해당 라이브러리가 CMake 프로젝트로 구성되어 있어야 한다(대부분의 오픈 소스 C++ 프로젝트는 CMake 프로젝트로 구성되어 있다). 또한 `FetchContent_MakeAvailable`로 사용할 수 있도록 `*.cmake.in`이라는 파일이 추가되어 있어야 한다.
@@ -169,7 +173,7 @@ FetchContent_MakeAvailable(Fmt)
 
 &nbsp;`FetchContent_MakeAvailable`을 사용하면 자동으로 해당 라이브러리를 빌드하지만, 어떤 경우에는 `FetchContent_Populate`를 통해 수동으로 디렉토리를 설정하고 다운로드해야 할 수도 있다.
 
-```CMakeLists.txt
+```Text
 FetchContent_Declare(
         spdlog
         GIT_REPOSITORY https://github.com/gabime/spdlog.git
@@ -186,7 +190,7 @@ target_link_libraries(my_lib PRIVATE spdlog)
 
 &nbsp;만약 사용할 라이브러리가 이미 자신의 시스템 안에 설치되어 있다면(Boost C++ Libraries, 패키지 매니저 등), `find_package`를 통해 외부 라이브러리를 받아올 수도 있다.
 
-```CMakeLists.txt
+```Text
 # 자동으로 Boost 경로 검색
 find_package(Boost 1.87.0 REQUIRED COMPONENTS system)
 
@@ -200,12 +204,12 @@ target_include_directories(my_lib PRIVATE ${Boost_INCLUDE_DIRS})
 &nbsp;`find_package`는 `<패키지 이름> [버전] [REQUIRED | QUIET] [COMPONENTS <패키지 내 사용할 라이브러리 이름>]`를 입력으로 받는다. `[REQUIRED | QUIET]`는 해당 패키지가 존재하지 않을 때 경고를 출력할 지, 하지 않을 지를 결정한다.
 
 
-&nbsp;CMake와 매끄럽게 연동되는 vcpkg와 함께 사용하려면 vcpkg로 사용할 라이브러리를 우선 설치한 후, `CMakeLists.txt` 파일과 같은 디렉토리에 `vcpkg.json` 파일을 위치시키고 위와 동일하게 `find_package`와 `target_link_libraries`로 정의하면 된다. 이후 CMake를 실행할 때 추가 인자로 `-DCMAKE_TOOLCHAIN_FILE=<vcpkg 설치 경로>/scripts/buildsystems/vcpkg.cmake`를 넘겨주거나, vcpkg를 자주 사용한다면 `CMakeLists.txt`에서 `set(CMAKE_TOOLCHAIN_FILE "<vcpkg 설치 경로>/scripts/buildsystems/vcpkg.cmake" CACHE STRING "vcpkg toolchain file")`로 정의해두어도 된다.
+&nbsp;패키지 매니저 vcpkg를 CMake와 사용하는 방법은 [vcpkg 사용법](./vcpkg.md)에서 소개하겠다.
 
 
 ## Build System
 
-&nbsp;CMake에서 사용할 빌드 시스템을 따로 설정하지 않는다면 디폴트로 Unix Make(Linux)가 선택되지만 Ninja, MinGW Make(Microsoft Windows)와 같은 다른 빌드 시스템을 사용하는 것도 가능하다. 특히 Make의 경우 사용하는 시스템에 따라 어떤 `Makefile`을 생성할지가 달라지기 때문에 필요한 경우 반드시 설정해주어야 한다.
+&nbsp;CMake에서 사용할 빌드 시스템을 따로 설정하지 않는다면 디폴트로 UNIX Make(Linux)가 선택되지만 Ninja, MinGW Make(Microsoft Windows)와 같은 다른 빌드 시스템을 사용하는 것도 가능하다. 특히 Make의 경우 사용하는 시스템에 따라 어떤 `Makefile`을 생성할지가 달라지기 때문에 필요한 경우 반드시 설정해주어야 한다.
 
 
-&nbsp;CMake를 실행할 때 인자로 `-DCMAKE_GENERATOR="MinGW Makefiles"`와 같이 넘겨주거나, 특정 시스템에서 자주 사용한다면 `CMakeLists.txt` 안에서 `set(CMAKE_GENERATOR "MinGW Makefiles")`로 정의해두어도 된다.
+&nbsp;CMake를 실행할 때 인자로 `-DCMAKE_GENERATOR="MinGW Makefiles"`와 같이 넘겨주거나, 특정 시스템에서 자주 사용한다면 `CMakeLists.txt` 안에서 `set(CMAKE_GENERATOR "MinGW Makefiles")`로 정의해두어도 된다(권장하지는 않는다).
