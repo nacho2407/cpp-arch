@@ -58,12 +58,12 @@ std::partial_sort(vec.begin(), vec.begin() + 3, vec.end());
 ```
 <br>
 
-&nbsp;정렬 순서를 바꾸고 싶을 때는 `std::sort`처럼 마지막 인자로 비교 함수 객체(람다 함수)를 넘겨준다.
+&nbsp;정렬 순서를 바꾸고 싶을 때는 `std::sort`처럼 마지막 인자로 비교 함수 객체(또는 람다 식)를 넘겨준다.
 
 
 ### std::stable_sort
 
-&nbsp;정렬 알고리즘에서 동일한 수준의 값들은 정렬 후에도 기존의 순서를 유지하는 것을 안정성(Stability)라 하는데, `std::sort`는 안정성을 만족하지 않는 퀵 정렬과 힙 정렬 등으로 구성되어 있다. 만약 안정성이 반드시 필요한 경우(pair 정렬 등)에는 `std::stable_sort`를 이용하여 정렬할 수 있다. `std::stable_sort`는 안정성을 만족하는 합병 정렬 및 삽입 정렬로 구현되었기 때문에 시간적 효율은 `std::sort`보다 떨어진다. 사용법은 `std::sort`와 동일하다.
+&nbsp;정렬 알고리즘에서 동일한 수준의 값들은 정렬 후에도 기존의 순서를 유지하는 것을 안정성(Stability)이라 하는데, `std::sort`는 안정성을 만족하지 않는 퀵 정렬과 힙 정렬 등으로 구성되어 있다. 만약 안정성이 반드시 필요한 경우(pair 정렬 등)에는 `std::stable_sort`를 이용하여 정렬할 수 있다. `std::stable_sort`는 안정성을 만족하는 합병 정렬 및 삽입 정렬로 구현되었기 때문에 시간적 효율은 `std::sort`보다 떨어진다. 사용법은 `std::sort`와 동일하다.
 
 ```C++
 std::vector<std::pair<int, char>> vec;
