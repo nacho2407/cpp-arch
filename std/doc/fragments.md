@@ -48,6 +48,14 @@ private:
 &nbsp;`sizeof` 연산자는 인자의 크기를 반환한다. **파라미터 팩에 `sizeof...` 연산자를 사용하면 해당 파라미터 팩이 포함하고 있는 인자의 개수를 반환한다**.
 
 
+- extern "C"
+
+&nbsp;`extern "C"`는 C++ 코드를 C에서도 사용할 수 있도록 하기 위함이라고만 알 수도 있는데, 정확히는 C++의 네임 맹글링을 적용하지 않도록 하여 C 컴파일러가 함수를 링크할 수 있도록 하는 목적이다. C++은 네임 맹글링을 통해 함수 오버로딩 등을 지원하는데, C는 그러한 기능이 없기 때문에 오버로딩도 불가능하고 컴파일 시 함수 이름을 뒤죽박죽으로 만들어놓을(Mangling) 필요가 없다.
+
+
+&nbsp;다른 말로 보자면 `extern "C"`는 링크 과정에만 영향을 미칠 뿐, 해당 함수 내에서 C++ 기능을 사용해도 문제는 없다는 뜻이다. 대신 네임 맹글링이 적용되지 않기 때문에 동일한 함수 명을 가진 함수를 오버로딩 할 수는 없고, C++ 기능을 사용한다면 해당 함수가 `extern "C"`로 정의되었어도 C에서 사용할 수 없다.
+
+
 ## Functor
 
 &nbsp;각 원소에 적용할 연산은 람다 함수를 사용하면 간단하게 표현이 가능하나, 특수한 상황에서 Functor를 사용해야하는 경우가 생길 수 있다. Functor는 다음과 같이 작성한다.
@@ -163,9 +171,53 @@ int main(void)
 &nbsp;웬만한 컴파일러엔 사실상 표준으로서 다 명시되어 있지만, 확실하게 사용하려면 컴파일러 등에서 옵션으로 `-D_WIN32`와 같이 넘겨주어도 된다.
 
 
-## extern "C"
+## Structured Binding
 
-&nbsp;`extern "C"`는 C++ 코드를 C에서도 사용할 수 있도록 하기 위함이라고만 알 수도 있는데, 정확히는 C++의 네임 맹글링을 적용하지 않도록 하여 C 컴파일러가 함수를 링크할 수 있도록 하는 목적이다. C++은 네임 맹글링을 통해 함수 오버로딩 등을 지원하는데, C는 그러한 기능이 없기 때문에 오버로딩도 불가능하고 컴파일 시 함수 이름을 뒤죽박죽으로 만들어놓을(Mangling) 필요가 없다.
+&nbsp;C++에서 Tuple을 사용할 수는 있지만 값을 이용할 때 `std::get<T>`를 이용해 하나하나 값을 가져와야 하는 것은 영 불편하다. C++ 17부터는 Structured Binding이라는 문법이 추가되었는데, 마치 Python의 Tuple을 사용하듯이 `[]`를 이용하여 `std::tuple<T>`에서 값을 받아올 수 있다.
+
+```C++
+#include <iostream>
+#include <string>
+#include <tuple>
+
+std::tuple<int, std::string> get_information(int id)
+{
+        if(id == 0)
+                return std::make_pair(0, "Nacho");
+        else
+                return std::make_pair(1, "Cheese");
+}
+
+int main(void)
+{
+        auto [id, name] = get_information(0);
+
+        std::cout << "Id: " << id << "\n";
+        std::cout << "Name: " << name << std::endl;
+
+        return 0;
+}
+```
+
+&nbsp;`auto [...]` 형태로 사용하며(`auto&`, `auto&&` 등도 가능), Python과 유사한 문법이지만 Python과 달리 중간 원소를 몇 개 빼고 받아오지는 못하고 반드시 모든 값들을 받아와야만 한다.
 
 
-&nbsp;다른 말로 보자면 `extern "C"`는 링크 과정에만 영향을 미칠 뿐, 해당 함수 내에서 C++ 기능을 사용해도 문제는 없다는 뜻이다. 대신 네임 맹글링이 적용되지 않기 때문에 동일한 함수 명을 가진 함수를 오버로딩 할 수는 없고, C++ 기능을 사용한다면 해당 함수가 `extern "C"`로 정의되었어도 C에서 사용할 수 없다.
+&nbsp;Structured Binding은 `std::tuple<T>`에만 사용할 수 있는 것은 아니고 구조체의 데이터 필드들을 받거나, `std::pair<T>`의 값을 받아올 때도 사용할 수 있다. 특히 `std::map<T>`을 사용할 때 범위 기반 for문을 작성하면서 유용하게 사용할 수 있다.
+
+```C++
+#include <iostream>
+#include <map>
+#include <string>
+
+int main(void)
+{
+        std::map<int, std::string> emp = {{0, "Nacho"}, {1, "Cheese"}};
+
+        for(auto& [id, name]: emp)
+                std::cout << "Id: " << id << "\nName: " << name << "\n";
+
+        std::cout << std::flush;
+
+        return 0;
+}
+```
