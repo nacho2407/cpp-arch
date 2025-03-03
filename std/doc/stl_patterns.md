@@ -71,7 +71,7 @@ int main(void)
 
 ## Removing Elements in Associative Containers
 
-&nbsp;[<algorithm> 기능 소개](./algorithm.md#erasing)에서도 설명했듯이 원소의 순서를 마음대로 변경할 수 없는 Associative Containers의 경우에는 `<algorithm>`의 `std::remove`나 `std::remove_if`를 사용할 수 없다.
+&nbsp;[`<algorithm>` 기능 소개](./algorithm.md#erasing)에서도 설명했듯이 원소의 순서를 마음대로 변경할 수 없는 Associative Containers의 경우에는 `<algorithm>`의 `std::remove`나 `std::remove_if`를 사용할 수 없다.
 
 
 &nbsp;가장 보편적인 방법은 각 컨테이너의 포함된 `erase` 함수를 사용하는 것이다. **`erase`는 반복자를 받아 해당 위치의 원소를 삭제하고 그 다음 원소를 가리키는 반복자를 반환**한다.
