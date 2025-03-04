@@ -127,4 +127,123 @@ int main(void)
 ```
 <br>
 
-*작성중 - std::map의 키-값 추출 / 관리*
+## Extracting Keys or Values from Map
+
+&nbsp;C++ 표준에는 아쉽게도 STL 맵 컨테이너(`std::map<T>`, `std::unordered_map<T>` 등)에서 키나 값을 추출하는 기능을 제공하지 않는다. 최선의 방법은 결국 for 문을 활용하여 하나하나 뽑아내는 수 밖에 없다.
+
+```C++
+#include <iostream>
+#include <map>
+#include <string>
+#include <vector>
+
+int main(void)
+{
+        std::map<int, std::string> m = {{1, "a"}, {2, "b"}, {3, "c"}};
+
+        std::vector<int> keys;
+        for(const auto& [k, v]: m)
+                keys.push_back(k);
+
+        for(auto k: keys)
+                std::cout << k << " ";
+
+        std::cout << std::endl;
+
+        return 0;
+}
+```
+<br>
+
+&nbsp;키나 값을 따로 관리해야할 필요가 있을 때, 복사를 동적 공간을 활용하거나 복사를 통해 관리하지 말고 맵 내의 원소를 가리키는 컨테이너로 관리할 수 있을까?
+
+
+&nbsp;`std::map<T>`나 `std::unordered_map<T>` 같은 경우엔 다른 원소의 위치가 변경되더라도 기존 원소의 레퍼런스는 유지되어야 한다고 C++ 표준에 명시되어있다. 덕분에 맵 컨테이너 내의 키나 값을 레퍼런스로 추출하여 관리할 수 있다.
+
+```C++
+#include <iostream>
+#include <map>
+#include <string>
+#include <vector>
+
+int main(void)
+{
+        std::map<int, std::string> m = {{1, "a"}, {2, "b"}, {3, "c"}};
+
+        std::vector<const std::string*> values;
+        for(const auto& [k, v]: m)
+                values.push_back(&v);
+
+        for(auto v: values)
+                std::cout << *v << " ";
+
+        std::cout << std::endl;
+
+        return 0;
+}
+```
+
+
+## std::back_inserter
+
+&nbsp;한 컨테이너의 값을 다른 컨테이너로 옮기려고 할 때, for 문을 사용해서 작성하는 것보다 좋은 방식이 있다. `<iterator>`의 `std::back_inserter`는 이러한 경우에 편하게 사용할 수 있는 함수로, `std::back_insert_iterator<T>`를 반환하는 함수다. 이 반복자는 값을 넣을 때 내부적으로 `push_back` 함수를 사용하기 때문에 값을 받을 컨테이너의 크기를 신경쓰지 않고 복사하여 넘길 수 있다.
+
+
+&nbsp;사용할 때는 `<algorithm>`의 `std::copy` 등의 함수를 활용하여 사용한다.
+
+```C++
+#include <algorithm>
+#include <deque>
+#include <iostream>
+#include <iterator>
+#include <string>
+#include <vector>
+
+int main(void)
+{
+        std::vector<std::string> v = {"a", "b", "c"};
+
+        std::deque<std::string> d;
+        std::copy(v.begin(), v.end(), std::back_inserter(d));
+
+        for(const auto& s: d)
+                std::cout << s << " ";
+
+        std::cout << std::endl;
+
+        return 0;
+}
+```
+<br>
+
+&nbsp;특히 `<algorithm>`의 `std::transform`과 함께 사용할 때 매우 편하게 사용할 수 있다.
+
+```C++
+#include <algorithm>
+#include <cstddef>
+#include <deque>
+#include <iostream>
+#include <iterator>
+#include <string>
+#include <vector>
+
+int main(void)
+{
+        std::vector<std::string> v = {"apple", "banana", "cacao"};
+
+        std::deque<std::size_t> d;
+        std::transform(v.begin(), v.end(), std::back_inserter(d), [](const std::string& s) {
+                return s.size();
+        });
+
+        for(auto t: d)
+                std::cout << t << " ";
+
+        std::cout << std::endl;
+
+        return 0;
+}
+```
+<br>
+
+&nbsp;`std::back_inserter`는 `push_back` 함수가 포함되어 있지 않은 컨테이너에는 사용할 수 없다.

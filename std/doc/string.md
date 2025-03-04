@@ -1,9 +1,12 @@
 # String
 
-&nbsp;제일 기본적인 기능들이지만 자주 까먹어서 이 참에 싹 정리한다. 모든 입력은 `std::string`을 기준으로 한다.
+&nbsp;`std::string` 관련 기능들을 정리해보자.
 
 
 ## Input
+
+&nbsp;제일 기본적인 기능들이지만 자주 까먹어서 이 참에 싹 정리한다. 모든 입력은 `std::string`을 기준으로 한다.
+
 
 ### std::cin::operator >>
 
@@ -196,3 +199,115 @@ int main(void)
         return 0;
 }
 ```
+
+
+## std::string_view
+
+&nbsp;사실 실제 프로그래밍을 하다보면 복사할 일이 제일 많은 데이터는 문자열 데이터일 것이다. 때문에 이동 연산과 참조를 할 일이 매우 많은데, 문자열을 가리키는 포인터처럼 사용할 수 있는 `std::string_view`가 C++ 17부터 사용 가능하다.
+
+
+&nbsp;그냥 `std::string`의 레퍼런스를 사용하면 되지, 왜 `std::string_view`가 필요한가? `std::string_view`는 `const char*`, `std::string` 등 다양한 문자열 타입을 받을 수 있다. `const std::string&` 타입을 매개 변수로 받는 함수가 있을 때, 이 함수의 입력으로 `"Hello, world!"` 등을 사용하게 되면 `const char*`가 `std::string`으로 변환되는 과정에서 임시 객체가 생성된다. 하지만 매개 변수를 `std::string_view` 타입으로 받으면 임시 객체 생성 없이 빠르고 효율적으로 문자열을 사용할 수 있다.
+
+
+&nbsp;또한 레퍼런스 형으로 값을 받는다고 하더라도 입력이 임시 객체라면 결국 복사가 발생하게 된다. 하지만 `std::string_view`를 사용하면 임시 객체라 하더라도 복사 없이 임시 객체 자체를 참조하는 객체를 사용하므로, 복사 없이 사용할 수 있다.
+
+```C++
+#include <iostream>
+#include <string>
+#include <string_view>
+
+std::string my_str(void)
+{
+        return "Hello, world!";
+}
+
+void say_hi_s(const std::string& s)
+{
+        std::cout << s << std::endl;
+}
+
+void say_hi_s_v(std::string_view s)
+{
+        std::cout << s << std::endl;
+}
+
+int main(void)
+{
+        say_hi_s(my_str()); // 임시 객체 -> 복사 발생
+        say_hi_s_v(my_str()); // 복사 없음!
+
+        return 0;
+}
+```
+<br>
+
+&nbsp;`std::string`은 문자열을 잘라내면 잘라낸 새로운 문자열을 생성하게 되는데, `std::string_view`를 활용하면 참조하고 있는 범위만 조절하여 문자열 생성 / 복사 없이 부분 문자열 처리를 할 수 있다는 장점도 있다.
+
+
+*작성중*
+
+
+## Replacing & Searching
+
+&nbsp;`std::string`에는 탐색을 지원하는 `find`와 문자열 교체를 지원하는 `replace` 함수를 지원한다.
+
+```C++
+#include <iostream>
+#include <string>
+
+int main(void)
+{
+        std::string s = "I love cats!";
+
+        s.replace(s.find("cats"), 4, "nacho");
+
+        std::cout << s << std::endl;
+
+        return 0;
+}
+```
+
+&nbsp;`find`는 찾은 문자열의 첫 위치를 반환하고(두 번째 인자로 탐색 시작 위치 지정), `replace`는 첫 번째 인자 위치부터 두 번째 인자만큼을 세 번째 인자로 변경하는 함수다. `std::string`은 모든 문자열을 변경하는 `replace_all` 같은 함수를 지원하지 않기 때문에 그런 기능이 필요하다면 직접 구현해야 한다.
+
+```C++
+void replace_all(std::string& src, std::string_view from, std::string_view to)
+{
+        for(std::size_t cur = src.find(from); cur != std::string::npos; cur = src.find(from, cur))
+                src.replace(cur, from.size(), to);
+}
+```
+<br>
+
+&nbsp;선형 탐색을 통해 단일 값을 찾아내는 `std::find`(`std::string` 및 컨테이너에 포함된 `find`와는 다름) 외에도 컨테이너에서 특정 패턴을 검사하는 `std::search`라는 함수도 있는데, 특히 문자열에서 많이 사용된다. `<algorithm>`에 포함된 이 함수들은 인덱스가 아닌 첫 위치를 가리키는 반복자를 반환한다.
+
+
+&nbsp;`std::search`는 단순 선형 검색을 통해 값을 탐색하는 `find`와 달리 좀 더 진보된 알고리즘을 사용할 수 있는데, 문자열을 빠르게 탐색하는 대표적인 알고리즘인 보이어-무어(-호스풀) 알고리즘을 사용할 수 있다.
+
+```C++
+#include <algorithm>
+#include <functional>
+#include <iostream>
+#include <iterator>
+#include <string>
+
+int main(void)
+{
+        std::string s = "Hello, world!";
+
+        std::string n = "world";
+
+        auto it = std::search(s.begin(), s.end(), std::boyer_moore_searcher(n.begin(), n.end()));
+
+        if(it != s.end())
+                std::cout << "Found @ " << std::distance(s.begin(), it) << std::endl;
+        else
+                std::cout << "Not found" << std::endl;
+
+        return 0;
+}
+```
+
+&nbsp;이 알고리즘은 `<functional>`의 `std::boyer_moore_searcher`라는 알고리즘 객체를 통해 사용할 수 있다. `std::distance`는 두 반복자 간 거리를 계산하는 `<iterator>`의 함수다.
+
+
+*작성중*
