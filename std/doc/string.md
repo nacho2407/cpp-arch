@@ -241,10 +241,7 @@ int main(void)
 ```
 <br>
 
-&nbsp;`std::string`은 문자열을 잘라내면 잘라낸 새로운 문자열을 생성하게 되는데, `std::string_view`를 활용하면 참조하고 있는 범위만 조절하여 문자열 생성 / 복사 없이 부분 문자열 처리를 할 수 있다는 장점도 있다.
-
-
-*작성중*
+&nbsp;참고로 `std::string_view`는 원본 `std::string`을 참조하는 객체이기 때문에 원본 `std::string`이 변경되면 참조하는 `std::string_view`도 변경된다.
 
 
 ## Replacing & Searching
@@ -281,7 +278,7 @@ void replace_all(std::string& src, std::string_view from, std::string_view to)
 &nbsp;선형 탐색을 통해 단일 값을 찾아내는 `std::find`(`std::string` 및 컨테이너에 포함된 `find`와는 다름) 외에도 컨테이너에서 특정 패턴을 검사하는 `std::search`라는 함수도 있는데, 특히 문자열에서 많이 사용된다. `<algorithm>`에 포함된 이 함수들은 인덱스가 아닌 첫 위치를 가리키는 반복자를 반환한다.
 
 
-&nbsp;`std::search`는 단순 선형 검색을 통해 값을 탐색하는 `find`와 달리 좀 더 진보된 알고리즘을 사용할 수 있는데, 문자열을 빠르게 탐색하는 대표적인 알고리즘인 보이어-무어(-호스풀) 알고리즘을 사용할 수 있다.
+&nbsp;`std::search`는 단순 선형 검색을 통해 값을 탐색하는 `find`와 달리 좀 더 진보된 알고리즘을 사용할 수 있는데, 문자열을 빠르게 탐색하는 대표적인 알고리즘인 보이어-무어 알고리즘을 사용할 수 있다.
 
 ```C++
 #include <algorithm>
@@ -310,4 +307,41 @@ int main(void)
 &nbsp;이 알고리즘은 `<functional>`의 `std::boyer_moore_searcher`라는 알고리즘 객체를 통해 사용할 수 있다. `std::distance`는 두 반복자 간 거리를 계산하는 `<iterator>`의 함수다.
 
 
-*작성중*
+## Case Conversion
+
+&nbsp;알파벳의 대소문자 변경은 C에서 넘어온 `<cctype>`의 `std::toupper`, `std::tolower`를 이용한다.
+
+
+## Substring
+
+&nbsp;`std::string`은 `substr` 수행 시 잘라낸 새로운 문자열을 생성하게 되는데, `std::string_view`의 `substr`은 참조하고 있는 범위만 조절하여 문자열 생성 / 복사 없이 부분 문자열 처리를 할 수 있다는 장점이 있다. 이 경우 시간 복잡도가 O(1)이다.
+
+
+&nbsp;또한 `std::string_view`의 `remove_prefix`, `remove_suffix` 함수를 통해 문자열의 연속된 접두사, 접미사를 빠르게 처리할 수 있다.
+
+```C++
+#include <algorithm>
+#include <iostream>
+#include <string>
+#include <string_view>
+
+int main(void)
+{
+        std::string s = "   Hello, world!   ";
+
+        std::string_view sv(s);
+
+        sv.remove_prefix(std::min(s.find_first_not_of(" "), s.size()));
+
+        sv.remove_suffix(std::min((s.size() - 1) - s.find_last_not_of(" "), s.size()));
+
+        std::cout << sv << std::endl;
+
+        return 0;
+}
+```
+
+&nbsp;위 코드는 `std::string`의 `find_first_not_of`, `find_last_not_of` 함수를 이용하여 문자열 앞 뒤의 연속된 문자(`" "`)를 삭제한다. `std::string`의 `substr`을 이용했다면 시간 / 공간 복잡도가 더 높았겠지만 `std::string_view`를 이용하여 매우 효율적으로 작업을 처리했다.
+
+
+&nbsp;참고로 `std::min`, `std::max` 함수는 C의 `min`, `max`와 달리 `<algorithm>`에 포함되어 있다.

@@ -141,7 +141,8 @@ int main(void)
 
 void run(void)
 {
-        nacho::ThreadPool pool(9);
+        // 현재 하드웨어에서 사용할 수 있는 프로세서 개수보다 1개 많을 때 일반적으로 최적 성능
+        nacho::ThreadPool pool(std::thread::hardware_concurrency() + 1);
 
         std::vector<std::future<int>> futures;
         for(std::size_t i = 0; i < TEST_SIZE; i++)

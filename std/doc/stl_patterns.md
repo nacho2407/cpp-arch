@@ -247,3 +247,38 @@ int main(void)
 <br>
 
 &nbsp;`std::back_inserter`는 `push_back` 함수가 포함되어 있지 않은 컨테이너에는 사용할 수 없다.
+
+
+## Pattern Searching
+
+&nbsp;Sequential Containers에는 연속된 특정 패턴을 빠르게 검색할 수 있는 방법이 제공되는데, 바로 `<algorithm>`의 `std::search`다. `std::find`와 달리 일정 길이의 패턴이 존재하는지 검색하여 찾아낸 위치를 가리키는 반복자를 반환한다.
+
+
+&nbsp;특히 더 효율적인 알고리즘인 보이어-무어 알고리즘를 `<functional>`의 `std::boyer_moore_searcher`를 통해 사용할 수 있다. 아래와 같이 사용한다.
+
+```C++
+#include <algorithm>
+#include <functional>
+#include <iostream>
+#include <iterator>
+#include <vector>
+
+int main(void)
+{
+        std::vector<int> v = {1, 5, 8, 3, 2, 4, 6};
+
+        std::vector<int> pattern = {8, 3, 2};
+
+        auto it = std::search(v.begin(), v.end(), std::boyer_moore_searcher(pattern.begin(), pattern.end()));
+
+        if(it != v.end())
+                std::cout << "Found @ " << std::distance(v.begin(), it) << std::endl;
+        else
+                std::cout << "Not found" << std::endl;
+
+        return 0;
+}
+```
+<br>
+
+&nbsp;`std::search`는 문자열 탐색에도 사용할 수 있는데, 자세한 내용은 [`<string>` 관련 내용](./string.md#replacing--searching)에서 다룬다.
