@@ -41,11 +41,7 @@ private:
         std::lock_guard<std::mutex> lock(clients_mutex_);
         for (const auto &client : clients_)
         {
-            socket_.async_send_to(
-                boost::asio::buffer(message), client,
-                [this](boost::system::error_code /*ec*/, std::size_t /*bytes_sent*/)
-                {
-                });
+            socket_.async_send_to(boost::asio::buffer(message), client);
         }
     }
 
