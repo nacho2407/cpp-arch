@@ -16,10 +16,10 @@
 &nbsp;Microsoft Windows 기준으로 Boost를 설치하는 방법은 다음과 같다. Boost 설치 위치를 환경 변수 Path에 등록해둔 후, 우선 `bootstrap.bat`을 이용하여 `b2`를 빌드한다. Microsoft Windows 기준으로 기본 툴체인이 MSVC로 되어있기 때문에 LLVM(`clang`)이나 mingw-w64(`gcc`)를 사용하는 경우 툴체인 정보를 추가로 넘겨주어야 한다. 이후 `b2`를 이용해 필요한 라이브러리를 빌드하는데, Boost.Asio 사용에 필요한 라이브러리인 Boost.System은 Boost의 많은 라이브러리에서 사용하므로 빌드해두는 것이 좋다.
 
 ```Shell
-b2 -j9 toolset=clang  --with-system stage
+b2 stage toolset=<사용할 컴파일러 이름> -j<생성할 쓰레드 수> --with-system
 ```
 
-&nbsp;사용할 라이브러리는 `--with-<라이브러리 이름>`으로 명시한다. 멀티 쓰레드를 이용해 빌드하려면 `-j<생성할 쓰레드 수>` 옵션과 함께 사용한다. 마지막의 `stage`는 라이브러리를 빌드할 폴더 이름으로, 원한다면 다른 이름으로 사용해도 된다.
+&nbsp;사용할 라이브러리는 `--with-<라이브러리 이름>`으로 명시한다. 마지막의 `stage`는 라이브러리를 빌드할 폴더 이름으로, 원한다면 다른 이름으로 사용해도 된다.
 
 
 &nbsp;이후 Boost와 함께 빌드하기 위해 컴파일 시 `-I<Boost 설치 경로>`, `-L<빌드한 Boost 라이브러리 경로(일반적으로 stage)>`를 추가한다.
