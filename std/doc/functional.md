@@ -2,7 +2,7 @@
 
 ## std::function<F>
 
-&nbsp;템플릿의 타입 등으로 함수 타입을 사용하려할 때 그냥 함수 포인터를 사용할 수도 있지만, 그런 경우에는 일반 함수만 사용할 수 있고 람다 함수 등 다른 Callable 객체를 받을 수 없다는 단점이 있다. `<functional>`의 `std::function<F>`는 람다 함수, Functor 등 모든 Callable 객체를 받을 수 있는 래퍼 클래스로, 아래와 같이 사용한다.
+&nbsp;템플릿의 타입 등으로 함수 타입을 사용하려할 때 그냥 함수 포인터를 사용할 수도 있지만, 그런 경우에는 일반 함수만 사용할 수 있고 람다 함수 등 다른 Callable 객체를 받을 수 없다는 단점이 있다. `<functional>`의 `std::function<F>`(함수 객체)는 람다 함수, Functor 등 모든 Callable 객체를 받을 수 있는 래퍼 클래스로, 아래와 같이 사용한다.
 
 ```C++
 #include <functional>
