@@ -11,7 +11,7 @@
 &nbsp;Make의 `Makefile`처럼 CMake는 `CMakeLists.txt`라는 파일을 입력으로 사용한다. `CMakeLists.txt`에 기본적으로 포함되어야 하는 내용은 아래와 같다.
 
 ```Text
-cmake_minimum_required(VERSION 3.11)
+cmake_minimum_required(VERSION 3.14)
 
 project(
         Test
@@ -21,7 +21,7 @@ project(
 )
 ```
 
-&nbsp;CMake도 어느정도 역사가 긴 프로그램이기 때문에(2025.02. 기준 4.0 Pre-release) 문법이나 주로 사용하는 기능들이 달라져 왔는데, 현재 자주 사용되는 문법들은 대부분 메이저 버전 3부터 사용되던 기능들이므로 `cmake_minimum_required`에 해당 문법이 사용 가능한 최소 버전을 입력한다. 일반적으로 `FetchContent` 모듈이 추가된 `VERSION 3.11`을 사용한다.
+&nbsp;CMake도 어느정도 역사가 긴 프로그램이기 때문에(2025.02. 기준 4.0 Pre-release) 문법이나 주로 사용하는 기능들이 달라져 왔는데, 현재 자주 사용되는 문법들은 대부분 메이저 버전 3부터 사용되던 기능들이므로 `cmake_minimum_required`에 해당 문법이 사용 가능한 최소 버전을 입력한다. 일반적으로 `FetchContent` 모듈이 안정화된 `VERSION 3.14`를 사용한다.
 
 
 &nbsp;`project`에는 본 프로젝트의 정보를 입력한다. 필수로 프로젝트 이름만 작성하면 되고, `VERSION`같은 내용들은 필수가 아니다.
