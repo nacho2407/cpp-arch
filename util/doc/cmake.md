@@ -126,6 +126,29 @@ target_compile_options(my_lib PRIVATE -std=c++20 -stdlib=libc++ -lc++abi -O2)
 ```
 
 
+## Build
+
+&nbsp;이제 프로젝트 단위(최상위) `CMakeLists.txt` 파일의 위치에서 `cmake`를 실행한다. 기본적으로 소스 코드와 동일한 위치에 빌드되는데, 프로젝트 디렉토리가 더러워지기 때문에 일반적으로 빌드 파일을 따로 만들어 해당 위치로 이동 후 `cmake ..`으로 빌드한다. `-B <빌드 디렉토리 이름>` 옵션으로 빌드 디렉토리를 생성함과 동시에 빌드할 수도 있다.
+
+
+&nbsp;CMake가 성공적으로 작동하면 빌드 디렉토리에 `Makefile`이 생기는데, 해당 디렉토리에서 `make`(mingw-w64 환경의 경우 `mingw32-make`)를 실행한다. 아니면 최상위 디렉토리에서 `cmake --build <빌드 디렉토리 이름>`으로 빌드할 수 있다.
+
+
+&nbsp;빌드 디렉토리에 우리 타겟이 생성되는데, 이를 우리가 원하는 위치에 설치할 수도 있다. `CMakeLists.txt`에 아래와 같이 정의한다.
+
+```Text
+install(
+        TARGETS main lib
+        DESTINATION ${CMAKE_SOURCE_DIR}/bin
+)
+```
+
+&nbsp;위와 같이 정의해두면 `make install` 수행 시 지정한 `DESTINATION`로 우리의 타겟들이 복사(설치)된다. `RUNTIME`, `LIBRARY`(동적 라이브러리), `ARCHIVE`(정적 라이브러리) 등으로 종류에 따라 설치 위치를 달리할 수도 있다.
+
+
+&nbsp;참고로 CMake는 기본적으로 `make clean`을 정의해주기 때문에 중간 빌드 파일들을 쉽게 정리할 수 있다.
+
+
 ## Access Modifier
 
 &nbsp;프로젝트 단위의 `CMakeLists.txt`와 달리 라이브러리 단위의 `CMakeLists.txt`에는 Target에 접근 제한자(`PRIVATE`)를 모두 명시하였다. 이는 해당 라이브러리 Target을 프로젝트의 메인 프로그램이 참조하기 때문이다.
@@ -159,7 +182,7 @@ FetchContent_MakeAvailable(fmt)
 target_link_libraries(my_lib PRIVATE fmt::fmt)
 ```
 
-&nbsp;참고로 외부 라이브러리를 링킹할 때 `target_link_libraries` 안에서 그냥 `fmt`가 아니라 `fmt::fmt`와 같이 정확한 타겟 이름을 넘겨주는 것이 최신 CMake 표준 방식이라고 한다.
+&nbsp;참고로 외부 라이브러리를 링킹할 때 `target_link_libraries` 안에서 그냥 `fmt`가 아니라 `fmt::fmt`와 같이 정확한 타겟 이름을 넘겨주는 것이 최신 CMake 표준 방식이라고 한다. 이 내용은 라이브러리마다 다르기 때문에 설명 문서 등을 확인하여 작성해야한다.
 
 
 &nbsp;`FetchContent` 모듈을 사용하기 위해서는 `include(FetchContent)`를 통해 들여온 다음 `FetchContent_Declare`를 통해 외부 라이브러리를 다운로드하고, `FetchContent_MakeAvailable`을 통해 외부 라이브러리를 프로젝트에 추가한다.
@@ -212,4 +235,4 @@ target_include_directories(my_lib PRIVATE ${Boost_INCLUDE_DIRS})
 &nbsp;CMake에서 사용할 빌드 시스템을 따로 설정하지 않는다면 디폴트로 UNIX Make(Linux)가 선택되지만 Ninja, MinGW Make(Microsoft Windows)와 같은 다른 빌드 시스템을 사용하는 것도 가능하다. 특히 Make의 경우 사용하는 시스템에 따라 어떤 `Makefile`을 생성할지가 달라지기 때문에 필요한 경우 반드시 설정해주어야 한다.
 
 
-&nbsp;CMake를 실행할 때 인자로 `-DCMAKE_GENERATOR="MinGW Makefiles"`와 같이 넘겨주거나, 특정 시스템에서 자주 사용한다면 `CMakeLists.txt` 안에서 `set(CMAKE_GENERATOR "MinGW Makefiles")`로 정의해두어도 된다(권장하지는 않는다).
+&nbsp;CMake를 실행할 때 인자로 `-DCMAKE_GENERATOR="MinGW Makefiles"`와 같이 넘겨주거나, 특정 시스템에서 자주 사용한다면 `CMakeLists.txt` 안에서 `set(CMAKE_GENERATOR "MinGW Makefiles")`로 정의해두어도 된다(권장하지는 않는다). 고전적인 방법으로 `-G "MinGW Makefiles"`와 같이 사용해도 된다.
