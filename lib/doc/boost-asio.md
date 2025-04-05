@@ -40,4 +40,4 @@ b2 --with-system -j<생성할 쓰레드 수> toolset=<사용할 컴파일러 이
 &nbsp;실행 중 오류 발생등의 이유로 해당 컨텍스트를 정지하고 싶으면 `boost::asio::io_context::stop`을, 작업을 다시 시작하려면 `boost::asio::io_context::restart`를 한다. 비동기 소켓 네트워킹에서는 컨텍스트에 직접 작업을 추가하는 일은 많지 않지만, `boost::asio::io_context::post` 등을 통해 비동기 작업을 직접 추가하여 실행할 수 있다.
 
 
-*작성중 - ## TCP Networking: boost::asio::ip::tcp, boost::asio::ip::tcp::socket, boost::asio::ip::tcp::acceptor, boost::asio::ip::tcp::acceptor::async_accept, boost::asio::ip::tcp::resolver, boost::asio::ip::tcp::resolver::resolve, boost::asio::ip::tcp::endpoint, boost::asio::ip::tcp::async_read_some, boost::asio::ip::tcp::async_send, boost::asio::post, boost::asio::strand, boost::asio::buffer, 데이터 수신을 위한 boost::asio::buffer, boost::asio::connect, ## Threading: boost::asio::thread_pool ## Error: boost::system::error_code, boost::system::error_code의 종류 ## UDP Networking: boost::asio::ip::udp(tcp와 차이점), boost::asio::ip::udp::socket::async_send_to, boost::asio::ip::udp::socket::async_receive_from*
+*작성중*
