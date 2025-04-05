@@ -79,8 +79,3 @@ target_link_libraries(my_lib PRIVATE ZLIB::ZLIB)
 ```Shell
 cmake -DCMAKE_TOOLCHAIN_FILE=<vcpkg 설치 주소>/scripts/buildsystems/vcpkg.cmake
 ```
-
-
-## Windows without Visual Studio
-
-&nbsp;Windows에서 vcpkg는 기본적으로 MSVC와 함께 동작하기 때문에 LLVM-MinGW 등 다른 툴체인과 함께 사용하려면 좀 더 작업이 필요하다. vcpkg는 크로스 플랫폼 지원을 위해 Triplet을 사용한다. `set VCPKG_DEFAULT_TRIPLET=x64-mingw-dynamic`처럼 미리 정의해두던가 환경 변수로 등록해두어야 한다. Visual Studio 자체가 설치되어 있지 않다면 `VCPKG_DEFAULT_HOST_TRIPLET`도 동일하게 설정해주어야 한다.
