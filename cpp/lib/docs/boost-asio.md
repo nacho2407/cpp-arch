@@ -1,9 +1,8 @@
 # Boost.Asio
 
-&nbsp;크로스 플랫폼을 지향하는 C++ 표준은, 지속적으로 발전하여 지금은 멀티 쓰레딩이나 Boost C++ Libraries에 포함된 여러 편리한 기능들을 포함하고 있지만 여전히 네트워크 관련 기능은 플랫폼에 종속적이고 명시된 표준이 없다.
+크로스 플랫폼을 지향하는 C++ 표준은, 지속적으로 발전하여 지금은 멀티 쓰레딩이나 Boost C++ Libraries에 포함된 여러 편리한 기능들을 포함하고 있지만 여전히 네트워크 관련 기능은 플랫폼에 종속적이고 명시된 표준이 없다.
 
-
-&nbsp;Boost.Asio 라이브러리는 다양한 플랫폼들(Microsoft Windows, POSIX)을 지원하기에 플랫폼 독립적인 C++ 코드를 작성할 수 있어 C++ 비동기 네트워크 프로그래밍에서 많이 사용하는 라이브러리다. 비동기 작업 목적으로 많이 사용하는 라이브러리지만, C++ 표준에 비동기 작업 라이브러리 [`<future>`](../../std/doc/asynchronous_threading.md)가 추가된 후로는 주로 네트워킹 작업에 많이 사용된다.
+Boost.Asio 라이브러리는 다양한 플랫폼들(Microsoft Windows, POSIX)을 지원하기에 플랫폼 독립적인 C++ 코드를 작성할 수 있어 C++ 비동기 네트워크 프로그래밍에서 많이 사용하는 라이브러리다. 비동기 작업 목적으로 많이 사용하는 라이브러리지만, C++ 표준에 비동기 작업 라이브러리 [`<future>`](../../std/doc/asynchronous_threading.md#stdpromiset-stdfuturet)가 추가된 후로는 주로 네트워킹 작업에 많이 사용된다.
 
 
 ## Boost C++ Libraries

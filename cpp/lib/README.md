@@ -1,3 +1,3 @@
-# cpp_arch::lib
+# C++ Libraries
 
 C++ 프로젝트에 유용한 오픈 소스 라이브러리 공부 정리
